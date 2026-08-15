@@ -1,0 +1,68 @@
+message,category
+How much does this product cost?,Product Inquiry
+What is the price of this item?,Product Inquiry
+Do you have this product in stock?,Product Inquiry
+Can you tell me more about this product?,Product Inquiry
+What colors does this product come in?,Product Inquiry
+Is this item available?,Product Inquiry
+Can I order this online?,Product Inquiry
+What are the specifications of this product?,Product Inquiry
+Does this come with a warranty?,Product Inquiry
+Is this product still available?,Product Inquiry
+
+Where is my order?,Order Status
+Can you track my package?,Order Status
+Has my order been shipped?,Order Status
+When will my order arrive?,Order Status
+My package has not arrived yet.,Order Status
+I want to know my delivery status.,Order Status
+Can you update me on my order?,Order Status
+Is my order delayed?,Order Status
+My tracking number is not working.,Order Status
+Has my parcel been delivered?,Order Status
+
+My product is broken.,Complaint
+I am unhappy with my purchase.,Complaint
+This item arrived damaged.,Complaint
+I received the wrong item.,Complaint
+Your service is terrible.,Complaint
+I want to file a complaint.,Complaint
+The quality is very poor.,Complaint
+I am disappointed with this product.,Complaint
+This is unacceptable.,Complaint
+I am not satisfied with my order.,Complaint
+
+I cannot log into my account.,Technical Support
+The app keeps crashing.,Technical Support
+I forgot my password.,Technical Support
+How do I reset my password?,Technical Support
+The website is not working.,Technical Support
+I am getting an error message.,Technical Support
+The system won't let me sign in.,Technical Support
+I can't access my account.,Technical Support
+The page won't load.,Technical Support
+The application freezes every time.,Technical Support
+
+I want to return my order.,Returns
+How do I return this item?,Returns
+Can I get a refund?,Returns
+What is your return policy?,Returns
+I need to exchange my purchase.,Returns
+Can I send this back?,Returns
+The item does not fit.,Returns
+I would like a refund.,Returns
+Can I return a damaged product?,Returns
+How long do refunds take?,Returns
+
+What are your business hours?,General Inquiry
+Where are you located?,General Inquiry
+How can I contact customer support?,General Inquiry
+Do you have a phone number?,General Inquiry
+What services do you offer?,General Inquiry
+Can you help me?,General Inquiry
+Hello,General Inquiry
+Good morning.,General Inquiry
+Thank you for your help.,General Inquiry
+I have a question.,General Inquiry
+
+
