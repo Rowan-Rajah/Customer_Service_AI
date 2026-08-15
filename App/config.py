@@ -16,7 +16,25 @@ import os
 
 APPLICATION_NAME = "Customer Service AI Platform"
 
-MODEL_NAME = "llama3.2:3b"
+# ---------------------------------------------------------
+# AI PROVIDER
+# ---------------------------------------------------------
+
+# Options:
+# "gemini" = Google Gemini API
+# "ollama" = Local Ollama model
+
+AI_PROVIDER = "gemini"
+
+# Gemini model
+GEMINI_MODEL = "gemini-3.6-flash"
+
+# Ollama model
+OLLAMA_MODEL = "llama3.2:3b"
+
+# Model displayed by the application
+MODEL_NAME = GEMINI_MODEL
+
 
 # ---------------------------------------------------------
 # AI Personality
@@ -135,7 +153,7 @@ APP_VERSION = "1.0"
 
 DEVELOPER = "Rowan Rajah"
 
-AI_STATUS = "Running Locally with Ollama"
+AI_STATUS = "Connected to Google Gemini"
 
 
 # Log file

@@ -111,9 +111,17 @@ sample = [
         1899.99,
         25,
         "Accessories"
-    )
+    ),
+
+    (   "Hard drive",
+        "Seagate portable 2Tb",
+        2567.99,
+        67,
+        "Accessories")
 
 ]
+
+
 
 
 # Insert the list into the database
@@ -139,6 +147,7 @@ cursor.executemany("""
 connection.commit()
 connection.close()
 print("Database created successfully.")
+
 
 
 
