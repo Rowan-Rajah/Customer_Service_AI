@@ -5,15 +5,6 @@ venv/
 __pycache__/
 *.pyc
 
-# Logs
-logs/
-
-# Generated exports
-exports/
-
-# Local database
-database/*.db
-
 # Environment / secrets
 .env
 .env.*

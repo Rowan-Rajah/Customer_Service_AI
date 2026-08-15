@@ -1,0 +1,112 @@
+Timestamp,Speaker,Message,Sentiment,Category,Model,Human Review
+2026-08-08 21:41:46,user,What laptops do you sell?,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:41:46,assistant,"We sell Dell Inspiron 15 and HP Pavilion laptops from our relevant database information. These are the current products available for purchase.
+
+Would you like to know more about either of these models, such as their features or pricing?",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:42:32,user,LAPTOP,Neutral,Complaint,llama3.2:3b,False
+2026-08-08 21:42:32,assistant,"I couldn't find a specific laptop model that matches your query. However, we do have Dell Inspiron 15 and HP Pavilion laptops in our database.
+
+If you're looking for information on one of these models, please let me know the name of the specific laptop you're interested in, such as ""Dell Inspiron 15"" or ""HP Pavilion"".",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:42:51,user,laptop,Neutral,Complaint,llama3.2:3b,False
+2026-08-08 21:42:51,assistant,"I couldn't find a specific laptop model that matches your query. Our database only lists Dell Inspiron 15 and HP Pavilion laptops. 
+
+If you could provide more details or specify the type of laptop you're looking for, I'd be happy to try and assist you further.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:43:19,user,How many laptops are in stock?,Positive,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:43:19,assistant,We have a total of 6 Dell Inspiron 15 laptops and 10 HP Pavilion laptops in stock. Would you like to know more about either of these models or would you like me to check if we can order one for you?,N/A,N/A,llama3.2:3b,False
+2026-08-08 21:43:43,user,How much is the Dell Inspiron 15?,Positive,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:43:43,assistant,"According to our database, the Dell Inspiron 15 laptop is priced at R12999.99. Please note that prices may be subject to change and availability. Would you like to confirm this price or ask about any other details regarding the laptop?",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:44:08,user,"
+Do you sell Samsung laptops?
+",Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:44:08,assistant,"We don't have any information on Samsung laptops in our database. However, we do have Dell Inspiron 15 and HP Pavilion laptops available for purchase. If you're looking for a different brand or model, I can try to help you with that. Alternatively, if you'd like to check on availability of other products, I can also provide general information on Samsung Galaxy S series phones which are available in our database",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:44:54,user,What is your warranty policy?,Neutral,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:44:54,assistant,"Our warranty policy states that all products, including laptops, come with a 12-month warranty against manufacturing defects. The warranty does not cover accidental damage, misuse, or normal wear and tear. Customers must provide proof of purchase when making a warranty claim. Warranty inspections are completed within five working days. Would you like to know more about this policy or would you like to make a warranty claim?",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:45:20,user,I'm really unhappy with the service I received.,Negative,Complaint,llama3.2:3b,False
+2026-08-08 21:45:20,assistant,"I apologize for the poor experience you had. Escalating your concern to a manager is the next step.
+
+To assist, could you please provide me with the order number and a brief description of the issue(s) you encountered? This will enable me to review your case and escalate it accordingly. I'll make sure that a member of our management team reviews your situation and provides a suitable resolution.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:45:54,user,I want to speak to a human.,Neutral,Returns,llama3.2:3b,True
+2026-08-08 21:45:54,assistant,"🚨 Human Review
+
+Your request has been flagged for review by our support team. A member of the team can review your conversation and assist you further.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:46:07,user,I was charged twice and nobody has helped me.,Neutral,Order Status,llama3.2:3b,True
+2026-08-08 21:46:07,assistant,"🚨 Human Review
+
+Your request has been flagged for review by our support team. A member of the team can review your conversation and assist you further.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:46:38,user,What services do you offer?,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:46:38,assistant,"I'm a customer service AI, and my primary role is to provide information and answer questions about our products and services.
+
+However, I don't have the ability to provide certain services that require human interaction or review, such as:
+
+* Refunds or chargebacks
+* Replacement or repair of products
+* Cancellations of orders
+
+In cases where these services are required, I can escalate your request to a human support team who will be happy to assist you.
+
+Would you like me to escalate your issue to a human representative?",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:47:07,user,"No i meant, what services does the business offer in general",Neutral,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:47:07,assistant,"Our business offers a range of products and services, including laptops, computers, and other electronic devices. We also provide maintenance and repair services for these products.
+
+In addition, we offer sales support, technical assistance, and online resources to help customers get the most out of their purchases.
+
+If you're looking for more information on our services or would like to know if we offer anything specific that's not listed here, feel free to ask!",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:47:51,user,do you have smartphones in stock?,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:47:51,assistant,"We don't have any smartphones currently in stock. Our database only lists Samsung Galaxy S series phones and iPhones from our previous database information. If you're looking for a specific smartphone model or brand, I can try to help you with that. Alternatively, if you'd like to check on availability of other products, I can also provide general information on laptops and tablets.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:47:59,user,what are your business hours,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:47:59,assistant,"Our business hours are:
+
+Monday to Friday: 08:00 to 17:00
+We are closed on Saturdays, Sundays, and public holidays.
+
+If you need assistance or have any questions, feel free to reach out to us during our business hours.",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:48:26,user,I am happy with your responses so far,Positive,Complaint,llama3.2:3b,False
+2026-08-08 21:48:26,assistant,"Aw, thank you so much! I'm glad to hear that my responses have been helpful and satisfactory. My primary goal is to assist customers like you with their queries, and it's great to know that I've been able to meet those expectations. If there's anything else I can help you with or if you have any further questions, please don't hesitate to ask!",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:49:08,user,What other brands of laptops do you sell?,Negative,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:49:08,assistant,"Unfortunately, our database does not currently list any other brands of laptops for sale.
+
+However, we do recommend checking out other retailers or online marketplaces that may carry a wider range of laptop models from various brands. Would you like me to provide some general guidance on how to find the best laptop for your needs?",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:49:15,user,What was the last thing I asked you?,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 21:49:15,assistant,"The last thing you asked me was ""What other brands of laptops do you sell?""",N/A,N/A,llama3.2:3b,False
+2026-08-08 21:49:37,user,"how much does a laptop repair cost
+
+",Positive,Product Inquiry,llama3.2:3b,False
+2026-08-08 21:49:37,assistant,"According to our database, our laptop repair prices are as follows:
+
+* Screen replacement: R200
+* Virus removal: R300
+* Data recovery: R500
+* PC health check: R400
+
+Please note that these prices may vary depending on the type and model of the laptop, as well as any additional repairs or services required. If you'd like to know more about our repair services or get a quote for your specific issue, feel free to ask!",N/A,N/A,llama3.2:3b,False
+2026-08-08 22:03:26,user,give me all the laptop information for the laptops in your database,Neutral,Technical Support,llama3.2:3b,False
+2026-08-08 22:03:26,assistant,"Here is the laptop information available in our database:
+
+**Dell Inspiron 15**
+
+* Description: 15.6 inch Laptop
+* Price: R12999.99
+* Stock: 6
+* Category: Laptops
+
+**HP Pavilion**
+
+* Description: 15.6 inch Laptop
+* Price: R11499.99
+* Stock: 10
+* Category: Laptops",N/A,N/A,llama3.2:3b,False
+2026-08-08 22:05:05,user,what smartphone is in stock,Neutral,Product Inquiry,llama3.2:3b,False
+2026-08-08 22:05:05,assistant,"According to our database, we have the following smartphones in stock:
+
+1. **Samsung Galaxy S24**
+	* Description: 128GB Smartphone
+	* Price: R14999.99
+	* Stock: 15
+	* Category: Smartphones
+2. **iPhone 16**
+	* Description: 128GB Smartphone
+	* Price: R18999.99
+	* Stock: 8
+	* Category: Smartphones",N/A,N/A,llama3.2:3b,False
+2026-08-08 22:07:09,user,what was the last thing i asked you,Neutral,General Inquiry,llama3.2:3b,False
+2026-08-08 22:07:09,assistant,I don't have any record of your previous question. This is the start of our conversation. What would you like to talk about?,N/A,N/A,llama3.2:3b,False
