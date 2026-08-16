@@ -29,8 +29,6 @@ from docx import Document
 
 import string
 
-from nltk.corpus import stopwords
-
 from nltk.stem import PorterStemmer
 
 
@@ -39,6 +37,24 @@ from nltk.stem import PorterStemmer
 # -----------------------------------
 
 stemmer = PorterStemmer()
+
+
+STOP_WORDS = {
+    "a", "an", "the", "and", "or", "but",
+    "if", "then", "than", "so", "because",
+    "as", "of", "at", "by", "for", "from",
+    "in", "into", "on", "onto", "to", "with",
+    "about", "after", "before", "between",
+    "during", "through", "above", "below",
+    "is", "am", "are", "was", "were", "be",
+    "been", "being",
+    "i", "me", "my", "we", "our", "you",
+    "your", "he", "him", "his", "she", "her",
+    "it", "its", "they", "them", "their",
+    "this", "that", "these", "those",
+    "what", "which", "who", "whom",
+    "when", "where", "why", "how"
+}
 
 
 # -----------------------------------
@@ -285,14 +301,12 @@ def preprocess_text(text):
 
     words = text.split()
 
-    stop_words = set(stopwords.words("english"))
-
-
+   
     keywords = []
 
     for word in words:
 
-        if word not in stop_words:
+        if word not in STOP_WORDS:
 
             keywords.append(stemmer.stem(word))
 

@@ -111,12 +111,12 @@ with st.sidebar:
 st.title("🤖 Customer Service AI Platform")
 
 st.caption(
-    "Professional AI-powered customer service assistant running locally with Ollama."
+    "Professional AI-powered customer service assistant running with Google Gemini AI."
 )
 
 st.info(
-    "💡 This prototype runs entirely on your local machine using Ollama. "
-    "No internet connection or paid AI API is required."
+    "💡 This prototype runs through Streamlit Community Cloud. "
+    "No paid AI API is required."
 )
 
 
