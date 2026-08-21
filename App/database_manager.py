@@ -1,106 +1,113 @@
 """
 File: database_manager.py
 
-Purpose: Searches the business database for information relevant to customer questions.
-
+Purpose:
+Searches the shared Render PostgreSQL business database
+for information relevant to customer questions.
 """
 
 # ---------------------------------------------------------
 # Imports
 # ---------------------------------------------------------
 
-import sqlite3
-
 import os
+import psycopg2
 
 from knowledge_manager import preprocess_text
 
-
 # ---------------------------------------------------------
-# Database Configuration
+# Database Connection
 # ---------------------------------------------------------
 
-DATABASE_PATH = os.path.join(
-    "database",
-    "business.db"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # ---------------------------------------------------------
-# Function to Search the Database 
+# Function to Search the Database
 # ---------------------------------------------------------
 
 def search_database(question):
 
-    # Preprocess the users message
-
+    # Preprocess the user's message
     keywords = preprocess_text(question)
 
     products = []
 
-    connection = sqlite3.connect(
-        DATABASE_PATH
+    # Connect to the shared PostgreSQL database
+    connection = psycopg2.connect(
+        DATABASE_URL
     )
 
     cursor = connection.cursor()
 
-
-    # Search the database for relevant products (search once per keyword)
+    # ---------------------------------------------------------
+    # Search products
+    # ---------------------------------------------------------
 
     for keyword in keywords:
-
         cursor.execute("""
+            SELECT
+                product_id,
+                product_name,
+                description,
+                price,
+                stock,
+                category
 
-            SELECT * FROM Products
-            WHERE ProductName LIKE ?
-            OR Description LIKE ?
-            OR Category LIKE ?
-
+            FROM products
+            WHERE product_name ILIKE %s
+            OR description ILIKE %s
+            OR category ILIKE %s
         """, (
-
             "%" + keyword + "%",
             "%" + keyword + "%",
             "%" + keyword + "%"
-
         ))
 
-        #  Fetch the results
+        # Fetch matching products
+        products.extend(
+            cursor.fetchall()
+        )
 
-        products.extend(cursor.fetchall())
+    # ---------------------------------------------------------
+    # Close database connection
+    # ---------------------------------------------------------
 
-
-    # Close the database
-
+    cursor.close()
     connection.close()
 
 
-    # Remove duplicate products from the list
+
+    # ---------------------------------------------------------
+    # Remove duplicate products
+    # ---------------------------------------------------------
 
     unique_products = []
-
     seen = set()
-
     for product in products:
-        if product[0] not in seen:
+        product_id = product[0]
+        if product_id not in seen:
             unique_products.append(product)
-            seen.add(product[0])
+            seen.add(product_id)
 
     products = unique_products
 
-
-    # Return the products in a formatted text
+    # ---------------------------------------------------------
+    # No products found
+    # ---------------------------------------------------------
 
     if not products:
-
         return ""
 
+    # ---------------------------------------------------------
+    # Format database information
+    # ---------------------------------------------------------
 
     result = ""
 
     for product in products:
 
         result += (
-
             f"Product: {product[1]}\n"
             f"Description: {product[2]}\n"
             f"Price: R{product[3]}\n"
@@ -109,12 +116,6 @@ def search_database(question):
         )
 
     return result
-
-
-
-
-
-
 
 
 

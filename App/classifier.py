@@ -1,8 +1,9 @@
 """
 File: classifier.py
 
-Purpose: Loads the trained classification model and predicts the category of customer messages.
-
+Purpose:
+Loads the trained classification model and predicts
+the category of customer messages.
 """
 
 # ---------------------------------------------------------
@@ -11,28 +12,51 @@ Purpose: Loads the trained classification model and predicts the category of cus
 
 import joblib
 
+from pathlib import Path
+
+
 # ---------------------------------------------------------
-# Load the trained model.
-# This happens once when the module is imported.
+# Model File Location
 # ---------------------------------------------------------
 
-model = joblib.load("models/conversation_classifier.pkl")
+# classifier.py is inside:
+# github_temp/App/
+#
+# The trained model is inside:
+# github_temp/models/
+#
+# Therefore, we go:
+# App -> github_temp -> models
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MODEL_PATH = (
+    BASE_DIR
+    / "models"
+    / "conversation_classifier.pkl"
+)
+
+
+# ---------------------------------------------------------
+# Load the trained model
+# ---------------------------------------------------------
+
+model = joblib.load(
+    MODEL_PATH
+)
+
 
 # ---------------------------------------------------------
 # Predict the category of a customer message
 # ---------------------------------------------------------
 
-"""
-Function to predict the business category of a customer message.
-
-Parameters - message (str) - The customer's message.
-
-Returns - str - The predicted conversation category.
-
-"""
-
 def predict_category(message):
-    prediction = model.predict([message])
+
+    prediction = model.predict(
+        [message]
+    )
+
     return prediction[0]
+
 
 

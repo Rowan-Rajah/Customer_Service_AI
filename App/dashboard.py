@@ -12,8 +12,6 @@ Customers never interact with this interface.
 # Imports
 # ---------------------------------------------------------
 
-import os
-
 import streamlit as st
 
 from analytics import (
@@ -26,11 +24,13 @@ from config import APPLICATION_NAME
 import matplotlib.pyplot as plt
 
 
-from export_manager import export_excel
-from config import (
-    LOG_FILE,
-    EXCEL_EXPORT
+from export_manager import (
+    export_csv,
+    export_excel
 )
+
+from config import EXCEL_EXPORT
+
 
 from knowledge_manager import (
     get_knowledge_files,
@@ -363,6 +363,7 @@ if st.button("Import Website"):
         )
 
 
+
 # ---------------------------------------------------------
 # Exports
 # ---------------------------------------------------------
@@ -370,29 +371,43 @@ if st.button("Import Website"):
 st.markdown("---")
 st.header("Export Reports")
 
-# CSV download
 
-if os.path.exists(LOG_FILE):
-    with open(LOG_FILE, "rb") as csv_file:
-        st.download_button(
-            label="📥 Download Conversation CSV",
-            data=csv_file,
-            file_name="conversation_history.csv",
-            mime="text/csv"
-        )
-else:
-    st.info(
-        "No conversation history is available yet."
+# ---------------------------------------------------------
+# CSV Export
+# ---------------------------------------------------------
+
+csv_export_path = "exports/conversation_history.csv"
+
+export_csv(
+    csv_export_path
+)
+
+with open(
+    csv_export_path,
+    "rb"
+) as csv_file:
+
+    st.download_button(
+        label="📥 Download Conversation CSV",
+        data=csv_file,
+        file_name="conversation_history.csv",
+        mime="text/csv"
     )
 
 
-# Generate Excel
+# ---------------------------------------------------------
+# Excel Export
+# ---------------------------------------------------------
 
-export_excel(EXCEL_EXPORT)
+export_excel(
+    EXCEL_EXPORT
+)
 
-# Excel download
+with open(
+    EXCEL_EXPORT,
+    "rb"
+) as excel_file:
 
-with open(EXCEL_EXPORT, "rb") as excel_file:
     st.download_button(
         label="⬇ Download Excel",
         data=excel_file,

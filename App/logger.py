@@ -1,76 +1,83 @@
 """
 File: logger.py
 
-Purpose: This module is responsible for saving conversations to a CSV file.
+Purpose:
+Stores customer and AI conversation messages in the shared
+Render PostgreSQL database.
 
-Future versions of the project could replace the CSV file with a database, without changing the rest of the application.
+The PostgreSQL database is the central source of truth for
+conversation data used by both the chatbot and dashboard.
 """
 
-# Used to check whether the log file already exists.
+# ---------------------------------------------------------
+# Imports
+# ---------------------------------------------------------
+
 import os
 
-# Used to work with CSV files.
-import csv
+import psycopg2
 
-# Used to generate timestamps.
+from config import MODEL_NAME
+
 from datetime import datetime
 
-# Import project configuration.
-from config import LOG_FILE, MODEL_NAME
+# ---------------------------------------------------------
+# Database Configuration
+# ---------------------------------------------------------
 
-# Make sure the logs folder exists.
-os.makedirs(
-    os.path.dirname(LOG_FILE),
-    exist_ok=True
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-"""
-Function to save one conversation message to the CSV file.
 
-Parameters:
-Speaker (str) - Who sent the message. ("User" or "Assistant".)
-Message (str) - The text of the conversation.
+# ---------------------------------------------------------
+# Log Message
+# ---------------------------------------------------------
 
-Returns: None
-"""
+def log_message(
+    speaker,
+    message,
+    sentiment="N/A",
+    category="N/A",
+    human_review=False
+):
 
-def log_message(speaker, message, sentiment="N/A", category="N/A", human_review=False):
+    connection = psycopg2.connect(
+        DATABASE_URL
+    )
 
-    # Check whether the file already exists.
-    # If not, we must create it and write column headings.
-    file_exists = os.path.isfile(LOG_FILE)
+    cursor = connection.cursor()
 
-    # Open the CSV file in append mode.
-    # newline="" prevents blank lines on some operating systems.
-    with open(LOG_FILE, mode="a", newline="", encoding="utf-8") as csv_file:
+    # Insert the conversation message into PostgreSQL.
+    cursor.execute(
+        """
+        INSERT INTO conversation_logs (
+    		timestamp,
+    		speaker,
+    		message,
+    		sentiment,
+    		category,
+    		model,
+    		human_review
+	)
 
-        # Create a CSV writer object.
-        writer = csv.writer(csv_file)
-
-        # If the file did not already exist,
-        # write the header row.
-        if not file_exists:
-            writer.writerow([
-                "Timestamp",
-                "Speaker",
-                "Message",
-                "Sentiment",
-                "Category",
-                "Model",
-                "Human Review"
-            ])
-
-        # Write one conversation record.
-        writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            speaker,
+	VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """,
+        (
+	    datetime.now(),            
+	    speaker,
             message,
             sentiment,
             category,
             MODEL_NAME,
             human_review
-        ])
+        )
+    )
 
+    # Save the new record.
+    connection.commit()
+
+    # Close the database connection.
+    cursor.close()
+    connection.close()
 
 
 

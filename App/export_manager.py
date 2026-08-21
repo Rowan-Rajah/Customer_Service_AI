@@ -1,7 +1,9 @@
 """
 File: export_manager.py
 
-Purpose: Handles exporting conversation logs into different formats.
+Purpose:
+Handles exporting conversation logs from the shared
+Render PostgreSQL database.
 
 Currently supported:
 - CSV
@@ -10,43 +12,101 @@ Currently supported:
 Future versions may include:
 - PDF
 - JSON
-
 """
 
 # ---------------------------------------------------------
 # Imports
 # ---------------------------------------------------------
 
+import os
+
 import pandas as pd
-from config import LOG_FILE
+import psycopg2
 
 
-"""
-Function to load the conversation log.
+# ---------------------------------------------------------
+# Database Configuration
+# ---------------------------------------------------------
 
-Returns - (DataFrame) - The complete conversation log.
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-"""
+
+# ---------------------------------------------------------
+# Load Conversation Log
+# ---------------------------------------------------------
 
 def load_conversation_log():
-    return pd.read_csv(LOG_FILE)
+
+    connection = psycopg2.connect(
+        DATABASE_URL
+    )
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            log_id,
+            timestamp,
+            speaker,
+            message,
+            sentiment,
+            category,
+            model,
+            human_review
+        FROM conversation_logs
+        ORDER BY timestamp
+        """
+    )
+
+    rows = cursor.fetchall()
+
+    columns = [
+        "log_id",
+        "timestamp",
+        "speaker",
+        "message",
+        "sentiment",
+        "category",
+        "model",
+        "human_review"
+    ]
+
+    df = pd.DataFrame(
+        rows,
+        columns=columns
+    )
+
+    cursor.close()
+    connection.close()
+
+    return df
 
 
+# ---------------------------------------------------------
+# Export Conversation Log to CSV
+# ---------------------------------------------------------
 
-"""
-Function to export the conversation log to Excel.
+def export_csv(output_path):
 
-Parameters - output_path : str
-Where the Excel file should be saved.
+    df = load_conversation_log()
 
-"""
+    df.to_csv(
+        output_path,
+        index=False
+    )
+
+
+# ---------------------------------------------------------
+# Export Conversation Log to Excel
+# ---------------------------------------------------------
 
 def export_excel(output_path):
+
     df = load_conversation_log()
 
     df.to_excel(
         output_path,
         index=False
     )
-
 

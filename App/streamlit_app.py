@@ -1,19 +1,31 @@
 """
 ===========================================================
-File: 
-streamlit_app.py
+File: streamlit_app.py
 
-Purpose: Customer Service AI Platform
+Purpose:
+Customer Service AI Platform
 
-(Frontend)
+Frontend application for customers to interact with
+the AI customer service assistant.
 
 This version includes:
 
 - Conversation memory
 - Chat history
 - Streamlit Session State
+- Sentiment analysis
+- Message classification
+- Business knowledge search
+- PostgreSQL product database search
+- Human review escalation
+- PostgreSQL conversation logging
 ===========================================================
 """
+
+
+# ---------------------------------------------------------
+# Imports
+# ---------------------------------------------------------
 
 import streamlit as st
 
@@ -67,19 +79,29 @@ with st.sidebar:
 
     st.subheader("Application Details")
 
-    st.write(f"**Name:** {APPLICATION_NAME}")
+    st.write(
+        f"**Name:** {APPLICATION_NAME}"
+    )
 
-    st.write(f"**Version:** {APP_VERSION}")
+    st.write(
+        f"**Version:** {APP_VERSION}"
+    )
 
-    st.write(f"**Developer:** {DEVELOPER}")
+    st.write(
+        f"**Developer:** {DEVELOPER}"
+    )
 
     st.markdown("---")
 
-    st.subheader("AI model Info")
+    st.subheader("AI Model Info")
 
-    st.write(f"**Model:** {MODEL_NAME}")
+    st.write(
+        f"**Model:** {MODEL_NAME}"
+    )
 
-    st.write(f"**Status:** {AI_STATUS}")
+    st.write(
+        f"**Status:** {AI_STATUS}"
+    )
 
     st.markdown("---")
 
@@ -90,28 +112,31 @@ with st.sidebar:
     st.markdown("---")
 
 
-    # ---------------------------------------------------------
+    # -----------------------------------------------------
     # Clear Conversation Button
-    # ---------------------------------------------------------
+    # -----------------------------------------------------
 
     if st.button("🗑️ Clear Conversation"):
 
         st.session_state.conversation = [
 
             {
-            "role": "system",
-            "content": SYSTEM_PROMPT
+                "role": "system",
+                "content": SYSTEM_PROMPT
             }
 
         ]
 
-        
 
+# =========================================================
+# Main Application
+# =========================================================
 
 st.title("🤖 Customer Service AI Platform")
 
 st.caption(
-    "Professional AI-powered customer service assistant running with Google Gemini AI."
+    "Professional AI-powered customer service assistant "
+    "running with Google Gemini AI."
 )
 
 st.info(
@@ -136,8 +161,9 @@ if "conversation" not in st.session_state:
 
     ]
 
+
 # ---------------------------------------------------------
-# Load the business knowledge
+# Load business knowledge
 # This only runs the FIRST time the page loads.
 # ---------------------------------------------------------
 
@@ -148,6 +174,7 @@ if "knowledge" not in st.session_state:
 
 # ---------------------------------------------------------
 # Display previous conversation
+#
 # Skip the system prompt because it is an internal
 # instruction for the AI.
 # ---------------------------------------------------------
@@ -160,12 +187,19 @@ for message in st.session_state.conversation:
     if message["role"] == "user":
 
         with st.chat_message("user"):
-            st.write(message["content"])
+
+            st.write(
+                message["content"]
+            )
 
     elif message["role"] == "assistant":
 
         with st.chat_message("assistant"):
-            st.write(message["content"])
+
+            st.write(
+                message["content"]
+            )
+
 
 # ---------------------------------------------------------
 # Chat input
@@ -176,18 +210,26 @@ user_message = st.chat_input(
 )
 
 
-# ---------------------------------------------------------
-# Process user input
-# ---------------------------------------------------------
+# =========================================================
+# Process User Input
+# =========================================================
 
 if user_message:
 
-    # Show the user's message immediately
+    # -----------------------------------------------------
+    # Display customer's message immediately
+    # -----------------------------------------------------
 
     with st.chat_message("user"):
-        st.write(user_message)
 
-    # Save it
+        st.write(
+            user_message
+        )
+
+
+    # -----------------------------------------------------
+    # Save customer's message to conversation memory
+    # -----------------------------------------------------
 
     st.session_state.conversation.append(
 
@@ -198,143 +240,278 @@ if user_message:
 
     )
 
-    # Perform sentiment analysis 
-    customer_sentiment = analyse_sentiment(user_message)
 
-    # Perform the message classification
-    category = predict_category(user_message)
+    # -----------------------------------------------------
+    # Sentiment Analysis
+    # -----------------------------------------------------
 
-    # Add the message to the logs
-    
-    # Search the business knowledge
-    business_knowledge = search_knowledge(
-        user_message,
-        st.session_state.knowledge
-    )
-
-    # Search the business database
-    database_information = search_database(
+    customer_sentiment = analyse_sentiment(
         user_message
     )
 
-    
-    # If no relevant information was found, provide a default message.
+
+    # -----------------------------------------------------
+    # Message Classification
+    # -----------------------------------------------------
+
+    category = predict_category(
+        user_message
+    )
+
+
+    # -----------------------------------------------------
+    # Search Business Knowledge
+    # -----------------------------------------------------
+
+    business_knowledge = search_knowledge(
+
+        user_message,
+
+        st.session_state.knowledge
+
+    )
+
+
+    # -----------------------------------------------------
+    # Search PostgreSQL Product Database
+    # -----------------------------------------------------
+
+    database_information = search_database(
+
+        user_message
+
+    )
+
+
+    # -----------------------------------------------------
+    # Handle missing business knowledge
+    # -----------------------------------------------------
+
     if not business_knowledge:
 
         business_knowledge = (
             "No relevant business information was found."
         )
 
-    # Create a temporary copy of the conversation
+
+    # -----------------------------------------------------
+    # Create temporary conversation copy
+    #
+    # The original Streamlit conversation remains unchanged.
+    # -----------------------------------------------------
+
     conversation = [
+
         message.copy()
+
         for message in st.session_state.conversation
+
     ]
 
-    # Add the business knowledge and database info to the system prompt
+
+    # -----------------------------------------------------
+    # Add Business Knowledge and Database Information
+    # to the AI system prompt
+    # -----------------------------------------------------
+
     conversation[0]["content"] = (
- 
+
         SYSTEM_PROMPT
 
         + "\n\n"
+
         + "RELEVANT BUSINESS KNOWLEDGE:\n"
+
         + business_knowledge
 
         + "\n\n"
+
         + "RELEVANT DATABASE INFORMATION:\n"
+
         + database_information
 
         + "\n\n"
+
         + "IMPORTANT INSTRUCTION FOR THIS CUSTOMER QUESTION:\n"
-        + "Use the relevant business and database information above "
-        "when answering the customer's question. "
-        "The database is the authoritative source for current "
-        "products, prices and stock. "
-        "If a product appears in the database results, use the "
-        "provided product name, price and stock information. "
-        "If a requested product does not appear in the database "
-        "results, do not invent one or claim that the business "
-        "sells it. "
-        "Do not replace specific database information with vague "
-        "general information."
+
+        + "Use the relevant business and database information "
+        "above when answering the customer's question. "
+
+        + "The database is the authoritative source for "
+        "current products, prices and stock. "
+
+        + "If a product appears in the database results, "
+        "use the provided product name, price and stock "
+        "information. "
+
+        + "If a requested product does not appear in the "
+        "database results, do not invent one or claim that "
+        "the business sells it. "
+
+        + "Do not replace specific database information "
+        "with vague general information."
 
     )
 
 
-    # Generate AI response
-    
+    # =====================================================
+    # Generate AI Response
+    # =====================================================
+
     try:
 
-        # Show a loading spinner while waiting for the AI.
-        with st.spinner("🤖 AI is thinking..."):
+        # -------------------------------------------------
+        # Show loading spinner
+        # -------------------------------------------------
+
+        with st.spinner(
+            "🤖 AI is thinking..."
+        ):
 
             reply = get_ai_response(
                 conversation
             )
 
-        # Check whether this conversation requires human review.
+
+        # -------------------------------------------------
+        # Check whether human review is required
+        # -------------------------------------------------
+
         human_review_required = requires_human_review(
+
             user_message,
+
             reply
+
         )
 
-        # Log the customer's message together with the
-        # human review decision.
+
+        # -------------------------------------------------
+        # Log customer message
+        #
+        # PostgreSQL stores:
+        # - speaker
+        # - message
+        # - sentiment
+        # - category
+        # - model
+        # - human_review
+        # - timestamp
+        # -------------------------------------------------
+
         log_message(
-                "user",
-                user_message,
-                customer_sentiment,
-                category,
-                human_review_required
-            )
+
+            "user",
+
+            user_message,
+
+            customer_sentiment,
+
+            category,
+
+            human_review_required
+
+        )
 
 
-        # Inform the customer if human assistance is required.
+        # -------------------------------------------------
+        # Handle Human Review
+        # -------------------------------------------------
+
         if human_review_required:
+
             reply = (
+
                 "🚨 Human Review\n\n"
-                "Your request has been flagged for review by our "
-                "support team. A member of the team can review "
-                "your conversation and assist you further."
+
+                "Your request has been flagged for review "
+                "by our support team. A member of the team "
+                "can review your conversation and assist "
+                "you further."
+
             )
 
-        # Display the AI response.
-        with st.chat_message("assistant"):
-            st.write(reply)
 
-        # Save the response.
+        # -------------------------------------------------
+        # Display AI response
+        # -------------------------------------------------
+
+        with st.chat_message("assistant"):
+
+            st.write(
+                reply
+            )
+
+
+        # -------------------------------------------------
+        # Save AI response to conversation memory
+        # -------------------------------------------------
+
         st.session_state.conversation.append(
+
             {
                 "role": "assistant",
                 "content": reply
             }
+
         )
 
-        # Add the message to the logs
+
+        # -------------------------------------------------
+        # Log AI response
+        #
+        # Sentiment and category use their default
+        # "N/A" values because these are only required
+        # for customer messages.
+        # -------------------------------------------------
+
         log_message(
-             "assistant",
-             reply
-            )
-        
+
+            "assistant",
+
+            reply
+
+        )
+
+
+    # =====================================================
+    # Error Handling
+    # =====================================================
 
     except Exception as error:
 
         st.error(
+
             "Unable to contact the AI. "
-            "Please make sure Ollama is running."
+            "Please make sure the AI service is running."
+
         )
 
-        # Optional: show technical details for debugging.
-        with st.expander("Technical Details"):
-            st.code(str(error))
+
+        # -------------------------------------------------
+        # Technical details for debugging
+        # -------------------------------------------------
+
+        with st.expander(
+            "Technical Details"
+        ):
+
+            st.code(
+                str(error)
+            )
 
 
-# Footer    
+# =========================================================
+# Footer
+# =========================================================
+
 st.markdown("---")
 
 st.caption(
+
     "Customer Service AI Platform | "
-    "Built with Python, Streamlit and Ollama"
+    "Built with Python, Streamlit and Google Gemini"
+
 )
 
 
