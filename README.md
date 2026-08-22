@@ -1586,3 +1586,810 @@ The intended architecture is:
 ```
 
 The current prototype establishes the core foundation required for this larger system.
+
+# 37. Cloud PostgreSQL Database Integration
+
+The project has been upgraded from a local SQLite product database to a shared cloud-based PostgreSQL database hosted through Render.
+
+The PostgreSQL database provides a central database that can be accessed by the deployed applications and other supported communication channels.
+
+The current architecture is:
+
+```text
+                    ┌─────────────────────────┐
+                    │    Render PostgreSQL    │
+                    │       Database          │
+                    └────────────┬────────────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              │                  │                  │
+              ▼                  ▼                  ▼
+       Customer App       Business Dashboard    Other Interfaces
+       / Backend              │                  (Telegram,
+              │               │                  future channels)
+              └───────────────┼──────────────────────┘
+                              ▼
+                     Shared business data
+```
+
+The database currently stores business product information and conversation records.
+
+## Product Database
+
+The PostgreSQL product database contains information such as:
+
+* Product ID
+* Product name
+* Description
+* Price
+* Stock
+* Category
+
+The AI can search the PostgreSQL database when a customer asks product-related questions.
+
+The database is treated as the authoritative source for:
+
+* Product names
+* Prices
+* Stock levels
+* Product categories
+* Other stored product information
+
+This prevents the AI from inventing product information that does not exist in the business database.
+
+## Conversation Database
+
+Conversation information is also stored in PostgreSQL.
+
+The logging system records information including:
+
+* Timestamp
+* Speaker
+* Message
+* Sentiment
+* Category
+* Model
+* Human-review status
+
+This allows the business dashboard and other supported applications to use the same conversation information.
+
+## Shared Cloud Database
+
+The move to PostgreSQL allows multiple deployed components of the platform to use the same business data.
+
+This is an important change from the previous local SQLite implementation because the database is no longer dependent on a single development machine.
+
+The cloud database can be accessed by applications through a secure database connection URL provided through environment variables.
+
+Database credentials and connection URLs are not stored in source code or committed to GitHub.
+
+---
+
+# 38. Cloud Deployment
+
+The platform has been deployed using cloud services for demonstration and testing.
+
+The current deployment architecture separates the customer-facing application, business dashboard, and backend services where appropriate.
+
+The deployed applications use environment variables/secrets for sensitive configuration.
+
+Sensitive values include:
+
+```text
+GEMINI_API_KEY
+DATABASE_URL
+```
+
+These values are configured through the appropriate cloud deployment environment rather than being committed to GitHub.
+
+The project continues to use GitHub as the source-code repository.
+
+---
+
+# 39. Environment Variables and Secrets
+
+Sensitive configuration is stored outside the source code.
+
+Local development can use a `.env` file.
+
+Example:
+
+```text
+GEMINI_API_KEY=...
+DATABASE_URL=...
+TELEGRAM_BOT_TOKEN=...
+```
+
+The actual secret values must never be committed to GitHub.
+
+The project's `.gitignore` excludes:
+
+```text
+.env
+.env.*
+.streamlit/secrets.toml
+```
+
+Cloud deployments use their platform-specific environment-variable or secrets configuration.
+
+The database connection is therefore different depending on where the application is running.
+
+For example:
+
+```text
+Local application
+        │
+        ▼
+External PostgreSQL connection
+        │
+        ▼
+Render PostgreSQL
+```
+
+Applications running within the Render environment can use the appropriate Render database connection configuration.
+
+---
+
+# 40. Database Management with DBeaver
+
+DBeaver is used as a graphical database management tool during development and testing.
+
+It allows the developer to connect directly to the PostgreSQL database and:
+
+* View database tables
+* View table contents
+* Inspect database records
+* Add records
+* Edit records
+* Delete records
+* Run SQL queries
+* Verify conversation logs
+* Verify product information
+
+Changes made directly to the shared PostgreSQL database are reflected in applications that query the database.
+
+For example:
+
+```text
+DBeaver
+   │
+   ▼
+Render PostgreSQL
+   │
+   ├── Products
+   ├── Conversation Logs
+   └── Other Business Data
+          │
+          ▼
+Customer Service AI Platform
+```
+
+DBeaver is therefore useful for business-database administration during development and demonstration without requiring a custom database-management interface to be built into the application.
+
+---
+
+# 41. PostgreSQL Database Setup and Testing
+
+The project includes supporting scripts used during the PostgreSQL migration and testing process.
+
+These include scripts for:
+
+* Creating PostgreSQL tables
+* Populating product information
+* Testing database connections
+* Verifying PostgreSQL tables
+* Verifying product records
+* Testing database search functionality
+
+Additional automated/manual test scripts are stored in:
+
+```text
+Test_Scripts/
+```
+
+The test scripts cover areas including:
+
+```text
+Test_Scripts/
+├── test_analytics.py
+├── test_database_search.py
+├── test_export.py
+└── test_logger.py
+```
+
+Additional database setup and verification scripts are located in the project root.
+
+These scripts are intended primarily for development, testing, and database administration rather than direct customer use.
+
+---
+
+# 42. Updated Project Structure
+
+The project structure has been expanded as the platform has developed.
+
+The current structure includes:
+
+```text
+Customer_Service_AI/
+│
+├── App/
+│   ├── streamlit_app.py
+│   ├── dashboard.py
+│   ├── AI_client.py
+│   ├── config.py
+│   ├── telegram_bot.py
+│   │
+│   ├── sentiment.py
+│   ├── classifier.py
+│   ├── escalation.py
+│   │
+│   ├── logger.py
+│   ├── analytics.py
+│   ├── export_manager.py
+│   │
+│   ├── knowledge_manager.py
+│   ├── website_manager.py
+│   ├── database_manager.py
+│   └── ...
+│
+├── Test_Scripts/
+│   ├── test_analytics.py
+│   ├── test_database_search.py
+│   ├── test_export.py
+│   └── test_logger.py
+│
+├── knowledge/
+│
+├── logs/
+│
+├── exports/
+│
+├── create_postgres_tables.py
+├── populate_products.py
+├── test_database.py
+├── verify_postgres_tables.py
+├── verify_products.py
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+The exact structure may continue to expand as additional communication channels are implemented.
+
+---
+
+# 43. Generated Files and GitHub Repository
+
+Generated exports are excluded from normal Git tracking using the project's `.gitignore`.
+
+The current `.gitignore` includes:
+
+```text
+# Generated exports
+exports/
+App/exports/
+```
+
+This prevents generated Excel and other export files from unnecessarily being committed to the source-code repository.
+
+The project also excludes:
+
+```text
+venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+.streamlit/secrets.toml
+```
+
+This keeps machine-specific files, generated files, and sensitive configuration outside the GitHub repository.
+
+---
+
+# 44. Telegram Integration
+
+The platform now includes a Telegram customer-service integration.
+
+Telegram acts as an additional customer-facing interface while reusing the existing Customer Service AI Platform components.
+
+The architecture is:
+
+```text
+                 Telegram Customer
+                        │
+                        ▼
+                 Telegram Bot
+                        │
+                        ▼
+                telegram_bot.py
+                        │
+        ┌───────────────┼────────────────┐
+        ▼               ▼                ▼
+   Sentiment       Classification   Knowledge Base
+        │               │                │
+        └───────────────┼────────────────┘
+                        ▼
+                PostgreSQL Database
+                        │
+                        ▼
+                     Gemini
+                        │
+                        ▼
+                Human Review Check
+                        │
+             ┌──────────┴──────────┐
+             ▼                     ▼
+       Telegram Response     PostgreSQL Logging
+```
+
+The Telegram integration reuses the existing platform rather than creating a separate AI system.
+
+## Telegram Features
+
+The Telegram bot supports:
+
+* Customer messages
+* Gemini AI responses
+* Conversation memory
+* Business knowledge search
+* PostgreSQL product search
+* Product prices and stock information
+* Sentiment analysis
+* Customer-message classification
+* Human-review escalation
+* PostgreSQL conversation logging
+
+Each Telegram conversation maintains its own conversation history so that separate customers do not share conversation context.
+
+## Telegram Bot Commands
+
+The `/start` command initializes a new Telegram conversation.
+
+A customer can then communicate with the AI using normal Telegram messages.
+
+---
+
+# 45. Telegram Environment Configuration
+
+The Telegram bot requires a Telegram Bot API token.
+
+The token is stored as an environment variable rather than inside the source code.
+
+The required local configuration includes:
+
+```text
+TELEGRAM_BOT_TOKEN=...
+GEMINI_API_KEY=...
+DATABASE_URL=...
+```
+
+The actual values must never be committed to GitHub.
+
+The Telegram bot uses the external PostgreSQL connection when running locally so that it can communicate with the shared Render PostgreSQL database.
+
+The local architecture is:
+
+```text
+Windows Development Environment
+          │
+          ▼
+     Telegram Bot
+          │
+          ├──────────────► Gemini API
+          │
+          └──────────────► Render PostgreSQL
+```
+
+---
+
+# 46. Telegram Testing
+
+The Telegram integration has been tested locally before deployment.
+
+Testing confirmed that:
+
+* The Telegram bot successfully receives messages.
+* Gemini successfully generates responses.
+* Business knowledge can be retrieved.
+* Product information can be retrieved from PostgreSQL.
+* Product prices and stock can be returned.
+* Conversation context is maintained.
+* Sentiment analysis is performed.
+* Customer messages are classified.
+* Human-review requests are detected.
+* Telegram interactions are stored in PostgreSQL.
+
+Database records generated through Telegram were verified using DBeaver.
+
+The Telegram integration is therefore functionally working locally and is ready for cloud deployment.
+
+---
+
+# 47. Updated Communication-Channel Roadmap
+
+The communication-channel roadmap has been updated as the project expands.
+
+Current and planned interfaces include:
+
+```text
+Customer Service AI Backend
+            │
+     ┌──────┼────────┬──────────┐
+     ▼      ▼        ▼          ▼
+ Streamlit Telegram Website   WhatsApp
+   App       Bot    Widget     Business
+```
+
+The Streamlit application remains the primary customer-facing demonstration interface.
+
+Telegram provides an additional messaging-based customer interface.
+
+The website widget and WhatsApp integration remain future communication-channel extensions.
+
+The important design principle is that these interfaces should reuse the same underlying AI, business knowledge, database, logging, analytics, and escalation systems rather than creating independent AI implementations.
+
+---
+
+# 48. Current Project Status Update
+
+The project has progressed from a local prototype into a cloud-connected customer service platform.
+
+The current system includes:
+
+```text
+                  Customer
+                     │
+       ┌─────────────┼──────────────┐
+       ▼             ▼              ▼
+   Streamlit      Telegram       Future
+   Customer         Bot        Interfaces
+      App
+       │             │
+       └──────┬──────┘
+              ▼
+       Customer Service
+          AI Platform
+              │
+      ┌───────┼────────┐
+      ▼       ▼        ▼
+  Knowledge PostgreSQL Gemini
+    Base    Database    AI
+      │       │        │
+      └───────┼────────┘
+              ▼
+       Customer Response
+              │
+      ┌───────┴────────┐
+      ▼                ▼
+ Conversation       Human Review
+   Logging            Detection
+      │
+      ▼
+ Business Dashboard
+```
+
+The major platform components have now been implemented and tested.
+
+The project currently has:
+
+* Google Gemini AI integration
+* Streamlit customer application
+* Streamlit business dashboard
+* Cloud PostgreSQL database
+* Product database search
+* Business knowledge retrieval
+* Website knowledge functionality
+* Sentiment analysis
+* Customer-message classification
+* Human-review escalation
+* Conversation logging
+* Business analytics
+* Data export
+* Cloud deployment
+* Telegram customer-service integration
+* DBeaver database administration/testing
+
+The Telegram bot has been successfully tested locally and its PostgreSQL logging has been verified.
+
+The next deployment step for Telegram is to deploy the bot as a separate cloud service and configure its required environment variables.
+
+---
+
+# 49. Updated Roadmap
+
+The project roadmap now reflects the implemented cloud and communication-channel functionality.
+
+```text
+Stage 1 – Core Platform
+    Phase 1  Development Environment             ✓
+    Phase 2  AI Communication                    ✓
+    Phase 3  Modular Architecture               ✓
+    Phase 4  Conversation Memory                ✓
+    Phase 5  AI Personality & Configuration      ✓
+    Phase 6  Professional Customer Application  ✓
+    Phase 7  Conversation Logging               ✓
+    Phase 8  Sentiment Analysis                 ✓
+    Phase 8.5 Enhanced Logging                  ✓
+
+Stage 2 – Business Intelligence
+    Phase 9  Business Dashboard                 ✓
+    Phase 9.5 Production Polish                 ✓
+    Phase 10 Machine Learning Classification    ✓
+
+Stage 3 – Business Knowledge
+    Phase 11 Knowledge Base Management           ✓
+    Phase 12 Website Knowledge Integration      ✓
+    Phase 13 Database Integration               ✓
+        └── Cloud PostgreSQL implementation      ✓
+
+Stage 4 – Deployment & Communication
+    Cloud Deployment                             ✓
+    Telegram Integration
+        ├── Local implementation                 ✓
+        ├── PostgreSQL integration               ✓
+        ├── Local testing                        ✓
+        └── Cloud deployment                    → Next
+    Website Chat Widget                          → Planned
+    WhatsApp Integration                         → Planned
+    AI Voice Customer Service                   → Future
+```
+
+The roadmap may be adjusted as the platform develops and new requirements are identified.
+
+---
+
+Yes — you're right. Since the **customer application and dashboard are already deployed**, and we've rebuilt all four existing cloud applications, the README should explicitly say that.
+
+Also, for Telegram, we should distinguish **locally completed** from **cloud deployment still to do**, because we haven't deployed the Telegram bot to Render yet.
+
+The relevant additions should therefore say:
+
+* **Streamlit Customer Application — deployed to Streamlit Community Cloud**
+* **Streamlit Business Dashboard — deployed to Streamlit Community Cloud**
+* **Backend/customer services — deployed to Render**
+* **Render PostgreSQL — cloud database**
+* **The applications use Render/Streamlit environment secrets**
+* **Telegram — working locally and ready for Render deployment**
+
+I'd replace the deployment/status portions I gave you with this corrected version:
+
+# Cloud Deployment
+
+The Customer Service AI Platform is deployed using both **Streamlit Community Cloud** and **Render**.
+
+The current cloud architecture is:
+
+```text
+                         GitHub Repository
+                                │
+                 ┌──────────────┴──────────────┐
+                 │                             │
+                 ▼                             ▼
+       Streamlit Community Cloud             Render
+                 │                             │
+        ┌────────┴────────┐            ┌───────┴────────┐
+        │                 │            │                │
+        ▼                 ▼            ▼                ▼
+ Customer Application   Dashboard   Backend Services   PostgreSQL
+        │                 │            │                │
+        └─────────────────┼────────────┴────────────────┘
+                          │
+                          ▼
+                 Shared Platform Data
+```
+
+## Streamlit Community Cloud
+
+Two Streamlit applications are deployed:
+
+### Customer Application
+
+The main customer-facing AI application is deployed to **Streamlit Community Cloud**.
+
+Customers can use the deployed application to:
+
+* Communicate with the AI customer service assistant
+* Ask business-related questions
+* Search available business knowledge
+* Search product information
+* Receive product prices and stock information
+* Have messages analysed for sentiment
+* Have messages classified
+* Trigger human-review escalation when required
+
+The application uses Streamlit Cloud secrets for sensitive configuration such as the Gemini API key and PostgreSQL connection information.
+
+### Business Dashboard
+
+The business analytics dashboard is also deployed to **Streamlit Community Cloud**.
+
+The dashboard provides access to:
+
+* Conversation statistics
+* Sentiment information
+* Message classifications
+* Product/database information where applicable
+* Conversation history
+* Export functionality
+* Business analytics
+
+The dashboard uses the required PostgreSQL secret to access the shared cloud database.
+
+The customer application and dashboard are separate Streamlit deployments but use the same underlying cloud PostgreSQL database.
+
+---
+
+# Render Deployment
+
+Render is used for the project's cloud backend infrastructure and PostgreSQL database.
+
+The project has been configured with multiple Render applications/services as part of the cloud deployment.
+
+Render provides the cloud environment required for the platform's backend functionality and database connectivity.
+
+The Render services use environment variables for sensitive information rather than storing credentials in the GitHub repository.
+
+The PostgreSQL database is hosted through Render and acts as the shared production database for the platform.
+
+---
+
+# Cloud PostgreSQL Database
+
+The project has been migrated from a local database setup to a shared **Render PostgreSQL database**.
+
+The PostgreSQL database stores:
+
+* Product information
+* Product prices
+* Stock levels
+* Product categories
+* Conversation logs
+* Sentiment information
+* Message classifications
+* Human-review information
+* Other required business data
+
+The database is shared by the deployed components of the platform.
+
+```text
+                Render PostgreSQL
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+ Streamlit        Render services   Telegram
+ Customer App                         Bot
+        │              │              │
+        └──────────────┼──────────────┘
+                       ▼
+              Shared business data
+```
+
+The database connection information is stored securely using environment variables/secrets.
+
+The PostgreSQL database can also be viewed and edited through **DBeaver** during development and administration.
+
+---
+
+# Cloud Secrets
+
+Sensitive credentials are not stored in GitHub.
+
+Local development uses a `.env` file, while cloud deployments use their respective environment-variable/secret systems.
+
+Important configuration values include:
+
+```text
+GEMINI_API_KEY
+DATABASE_URL
+TELEGRAM_BOT_TOKEN
+```
+
+The actual values are never stored in the README or source code.
+
+The `.gitignore` file excludes local environment files and other sensitive configuration.
+
+---
+
+# Telegram Integration
+
+Telegram has been added as an additional customer-facing interface.
+
+The Telegram bot has been successfully implemented and tested locally.
+
+The bot uses the same core platform functionality as the Streamlit customer application, including:
+
+* Google Gemini
+* Business knowledge
+* PostgreSQL product search
+* Sentiment analysis
+* Message classification
+* Human-review escalation
+* PostgreSQL conversation logging
+
+The local Telegram architecture is:
+
+```text
+Telegram
+    │
+    ▼
+telegram_bot.py
+    │
+    ├── Gemini
+    ├── Knowledge Base
+    ├── PostgreSQL
+    ├── Sentiment Analysis
+    ├── Classification
+    └── Human Review
+            │
+            ▼
+       PostgreSQL Logs
+```
+
+The Telegram bot has been tested successfully with the shared Render PostgreSQL database.
+
+Telegram conversations have also been verified in DBeaver to confirm that the interactions are being logged correctly.
+
+The Telegram bot is now ready to be deployed as an additional Render service.
+
+---
+
+# Current Deployment Status
+
+The current project status is:
+
+```text
+Component                         Status
+------------------------------------------------
+GitHub repository                 ✓ Deployed
+Streamlit Customer Application    ✓ Deployed
+Streamlit Business Dashboard      ✓ Deployed
+Render cloud services             ✓ Deployed
+Render PostgreSQL database        ✓ Deployed
+Cloud database integration        ✓ Complete
+DBeaver database access           ✓ Working
+Telegram bot locally              ✓ Working
+Telegram PostgreSQL logging       ✓ Working
+Telegram Render deployment        → Next
+Website chat widget               → Planned
+WhatsApp integration              → Planned
+Voice integration                 → Future
+```
+
+The platform is therefore already operating as a **cloud-deployed customer service AI platform**, rather than only a local prototype.
+
+---
+
+# Updated Communication Architecture
+
+The platform currently supports multiple interfaces around the same underlying AI and business systems:
+
+```text
+                         Customer Service AI Platform
+                                    │
+             ┌──────────────────────┼──────────────────────┐
+             │                      │                      │
+             ▼                      ▼                      ▼
+       Streamlit App           Telegram Bot          Future Channels
+             │                      │                │
+             │                      │                ├── Website Widget
+             │                      │                └── WhatsApp
+             │                      │
+             └──────────────┬───────┘
+                            ▼
+                    Shared AI Services
+                            │
+              ┌─────────────┼─────────────┐
+              ▼             ▼             ▼
+           Gemini      Knowledge Base   PostgreSQL
+                                           │
+                              ┌────────────┼────────────┐
+                              ▼            ▼            ▼
+                          Products      Logs       Analytics
+```
+
+The main design principle is that each communication channel should reuse the same underlying AI, business knowledge, database, logging, analytics, and escalation systems instead of implementing separate systems for each platform.
+
+
