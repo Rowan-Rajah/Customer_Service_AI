@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Service AI</title>
+
+    <link rel="stylesheet" href="widget.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================================
+         Chat Launcher
+         ================================================= -->
+
+    <button id="open-chat">
+
+        💬
+
+    </button>
+
+
+    <!-- =================================================
+         Chat Widget
+         ================================================= -->
+
+    <div id="chat-widget">
+
+
+        <!-- ---------------------------------------------
+             Chat Header
+             --------------------------------------------- -->
+
+        <div id="chat-header">
+
+            <span>Customer Service AI</span>
+
+            <button id="close-chat">×</button>
+
+        </div>
+
+
+        <!-- ---------------------------------------------
+             Chat Messages
+             --------------------------------------------- -->
+
+        <div id="chat-messages">
+
+            <div class="message assistant-message">
+
+                Hello! How can I help you today?
+
+            </div>
+
+        </div>
+
+
+        <!-- ---------------------------------------------
+             Message Input
+             --------------------------------------------- -->
+
+        <div id="chat-input-area">
+
+            <input
+                type="text"
+                id="message-input"
+                placeholder="Type your message..."
+            >
+
+            <button id="send-button">
+
+                Send
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="widget.js"></script>
+
+</body>
+
+</html>

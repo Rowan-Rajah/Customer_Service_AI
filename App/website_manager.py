@@ -16,7 +16,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from config import KNOWLEDGE_FOLDER
+from App.config import KNOWLEDGE_FOLDER
 
 import os
 
@@ -42,13 +42,13 @@ Returns - str - HTML content of the webpage.
 """
 
 def download_webpage(url):
-    
-    response = requests.get(
-        url,
-        timeout=10
-    )
+
+    response = requests.get(url, timeout=10)
 
     response.raise_for_status()
+
+    # Use the encoding detected from the webpage, instead of relying on an incorrect server encoding.
+    response.encoding = response.apparent_encoding
 
     return response.text
 

@@ -17,7 +17,7 @@ import os
 
 import psycopg2
 
-from config import MODEL_NAME
+from App.config import MODEL_NAME
 
 from datetime import datetime
 

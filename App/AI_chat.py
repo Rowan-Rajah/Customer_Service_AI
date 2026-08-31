@@ -11,8 +11,8 @@ memory.
 ===========================================================
 """
 
-from AI_client import get_ai_response
-from config import APPLICATION_NAME, SYSTEM_PROMPT
+from App.AI_client import get_ai_response
+from App.config import APPLICATION_NAME, SYSTEM_PROMPT
 
 
 print("=" * 50)

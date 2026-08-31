@@ -13,7 +13,7 @@ for information relevant to customer questions.
 import os
 import psycopg2
 
-from knowledge_manager import preprocess_text
+from App.knowledge_manager import preprocess_text
 
 # ---------------------------------------------------------
 # Database Connection

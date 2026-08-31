@@ -2393,3 +2393,185 @@ The platform currently supports multiple interfaces around the same underlying A
 The main design principle is that each communication channel should reuse the same underlying AI, business knowledge, database, logging, analytics, and escalation systems instead of implementing separate systems for each platform.
 
 
+Customer Service AI Platform — Latest Project Update
+
+---
+Website Chat Widget
+
+A website-embeddable chat widget has been added to the platform.
+The widget provides a customer-facing chat interface that can be placed directly on a business website.
+The widget consists of:
+
+```text
+Website
+   │
+   ▼
+Website Chat Widget
+   │
+   ▼
+FastAPI API
+   │
+   ▼
+Existing Customer Service AI Platform
+   │
+   ├── Google Gemini
+   ├── Business Knowledge Base
+   ├── PostgreSQL Product Database
+   ├── Sentiment Analysis
+   ├── Message Classification
+   ├── Human Review / Escalation
+   └── Conversation Logging
+```
+
+The website widget does not implement a separate AI system.
+Instead, it communicates with the existing platform through the FastAPI API, allowing the website interface to reuse the existing AI, business knowledge, database, logging, sentiment analysis, classification, and human-review functionality.
+The widget currently includes:
+Chat launcher button
+Chat window
+Customer and AI message bubbles
+Message input
+Send button
+Enter-to-send functionality
+Conversation session ID
+Connection to the FastAPI `/chat` endpoint
+Error handling when the API cannot be reached
+Automatic scrolling to the newest message
+Responsive chat interface
+The widget has been successfully tested locally.
+
+---
+Website Knowledge Integration
+
+The existing website knowledge functionality has also been tested with the website widget.
+The system was successfully able to retrieve and provide business information from website knowledge, including:
+Business location
+Opening hours
+Contact information
+Services
+Pricing information
+The testing demonstrated that the AI can use website-derived knowledge to answer customer questions.
+The website knowledge extraction process was also updated to ensure that text encoding is handled correctly, preventing incorrectly displayed characters such as malformed accented characters.
+For example, business names containing accented characters can now be displayed correctly in the customer-facing widget.
+
+---
+Website Widget Testing
+
+The website widget was tested using a range of customer questions.
+Testing confirmed that the system can successfully:
+Answer general business questions
+Retrieve information from the business knowledge base
+Retrieve product information from PostgreSQL
+Maintain conversation context
+Handle follow-up questions
+Detect requests for human assistance
+Trigger human-review responses
+Handle questions where the required information is unavailable
+Provide appropriate responses when information is not known
+The widget was also tested using a business knowledge base containing information from a hair salon.
+The AI was able to accurately retrieve business details such as the salon's location, opening hours, phone number, services, and pricing.
+Testing also demonstrated that the system can retrieve product information from the PostgreSQL database when appropriate.
+The testing showed that the quality of the AI's answers depends on the quality and organisation of the business knowledge provided to it. Keeping knowledge bases focused on the correct business and avoiding unrelated information improves the reliability of responses.
+---
+
+FastAPI Integration
+
+A FastAPI application has been added as the backend interface for the website widget.
+The API provides the following endpoint:
+```text
+POST /chat
+```
+The endpoint accepts:
+```text
+message
+session_id
+```
+
+and returns the AI response together with the session ID.
+The API has been successfully tested locally using Uvicorn.
+The project can successfully import the FastAPI application using:
+```text
+python -c "from App.api import app; print('API import successful')"
+```
+The API has also been successfully started using:
+```text
+python -m uvicorn App.api:app --host 0.0.0.0 --port 8000
+```
+A local API request was successfully tested and returned an AI response using the existing business knowledge.
+The FastAPI integration therefore reuses the existing project architecture rather than replacing or restructuring the existing applications.
+---
+Deployment Compatibility Testing
+The addition of the FastAPI API and website widget has been tested against the existing applications to ensure that the existing architecture has not been broken.
+The Streamlit customer application was tested successfully.
+The Streamlit business dashboard was also tested successfully.
+The existing Telegram bot was tested locally as well. The bot successfully started and reached the Telegram polling stage.
+A `Conflict: terminated by other getUpdates request` message was encountered during testing because another instance of the same Telegram bot is already running on Railway.
+This is expected behaviour when two Telegram bot instances attempt to use the same polling connection simultaneously and does not indicate that the Telegram bot's application code is broken.
+The existing Render PostgreSQL database continues to be used as the shared cloud database for the platform.
+---
+Final Architecture
+The current platform architecture is now:
+```text
+                         Customer Service AI Platform
+                                    │
+             ┌──────────────────────┼─────────────────────────┐
+             │                      │                         │
+             ▼                      ▼                         ▼
+       Streamlit App          Website Widget             Telegram
+             │                      │                         │
+             │                      ▼                         │
+             │                FastAPI API                    │
+             │                      │                         │
+             └──────────────────────┼─────────────────────────┘
+                                    ▼
+                           Shared AI Platform
+                                    │
+                ┌───────────────────┼───────────────────┐
+                │                   │                   │
+                ▼                   ▼                   ▼
+             Gemini          Knowledge Base        PostgreSQL
+                                                        │
+                                      ┌─────────────────┼─────────────────┐
+                                      ▼                 ▼                 ▼
+                                  Products            Logs            Analytics
+                                                        │
+                                                        ▼
+                                               Human Review
+```
+The important architectural principle remains unchanged:
+Different customer communication channels reuse the same underlying AI and business systems.
+The website widget therefore acts as another interface to the existing Customer Service AI Platform rather than becoming a separate chatbot system.
+---
+Current Project Status
+The latest project status is:
+```text
+Component                         Status
+------------------------------------------------
+GitHub repository                 ✓ Existing
+Streamlit Customer Application    ✓ Working
+Streamlit Business Dashboard      ✓ Working
+Render cloud services             ✓ Deployed
+Render PostgreSQL database        ✓ Working
+Cloud database integration        ✓ Complete
+DBeaver database access           ✓ Working
+Telegram bot                      ✓ Deployed on Railway
+Telegram PostgreSQL logging       ✓ Working
+Website knowledge manager         ✓ Working
+Website Chat Widget               ✓ Working locally
+FastAPI API                       ✓ Working locally
+Widget testing                    ✓ Complete
+Encoding cleanup                  ✓ Complete
+Deployment preparation            ✓ In progress
+Website widget cloud deployment   → Next
+```
+The remaining deployment work is primarily infrastructure configuration rather than redevelopment of the core AI platform.
+The website widget must use the deployed FastAPI service URL rather than the local development address:
+```javascript
+const API_URL = "http://127.0.0.1:8000/chat";
+```
+During deployment, this will be replaced with the public HTTPS URL of the deployed FastAPI service.
+The final deployment will therefore consist of the existing cloud platform together with the new website communication interface.
+---
+
+
+
+

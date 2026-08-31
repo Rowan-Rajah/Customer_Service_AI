@@ -1,0 +1,329 @@
+/* =========================================================
+   Customer Service AI
+   Website Chat Widget
+   CSS
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   Page
+   --------------------------------------------------------- */
+
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    background: transparent;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+}
+
+
+/* ---------------------------------------------------------
+   Chat Launcher Button
+   --------------------------------------------------------- */
+
+#open-chat {
+
+    position: fixed;
+
+    bottom: 20px;
+
+    right: 20px;
+
+    width: 60px;
+
+    height: 60px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #2864e8;
+
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.25);
+
+}
+
+
+/* ---------------------------------------------------------
+   Chat Widget
+   --------------------------------------------------------- */
+
+#chat-widget {
+
+    position: fixed;
+
+    bottom: 20px;
+
+    right: 20px;
+
+    width: 430px;
+
+    height: 670px;
+
+    background: #f5f6f8;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.20);
+
+    display: none;
+
+    flex-direction: column;
+
+}
+
+
+/* ---------------------------------------------------------
+   Chat Header
+   --------------------------------------------------------- */
+
+#chat-header {
+
+    height: 72px;
+
+    background: #2864e8;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 22px;
+
+    box-sizing: border-box;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+}
+
+
+#close-chat {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+    line-height: 1;
+
+}
+
+
+/* ---------------------------------------------------------
+   Chat Messages
+   --------------------------------------------------------- */
+
+#chat-messages {
+
+    flex: 1;
+
+    padding: 20px;
+
+    overflow-y: auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+}
+
+
+/* ---------------------------------------------------------
+   Individual Messages
+   --------------------------------------------------------- */
+
+.message {
+
+    max-width: 80%;
+
+    padding: 13px 17px;
+
+    border-radius: 15px;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    word-wrap: break-word;
+
+}
+
+
+/* Customer message */
+
+.user-message {
+
+    align-self: flex-end;
+
+    background: #2864e8;
+
+    color: white;
+
+    border-bottom-right-radius: 5px;
+
+}
+
+
+/* AI message */
+
+.assistant-message {
+
+    align-self: flex-start;
+
+    background: #e1e3e7;
+
+    color: #111827;
+
+    border-bottom-left-radius: 5px;
+
+}
+
+
+/* ---------------------------------------------------------
+   Input Area
+   --------------------------------------------------------- */
+
+#chat-input-area {
+
+    display: flex;
+
+    gap: 10px;
+
+    padding: 14px;
+
+    background: #f5f6f8;
+
+    border-top: 1px solid #d8dadd;
+
+}
+
+
+#message-input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 50px;
+
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    border: 1px solid #cfd3d8;
+
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 16px;
+
+    outline: none;
+
+}
+
+
+#message-input:focus {
+
+    border-color: #2864e8;
+
+}
+
+
+#send-button {
+
+    height: 50px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #2864e8;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+#send-button:hover {
+
+    background: #1f54c7;
+
+}
+
+
+#send-button:disabled {
+
+    background: #9aa0a8;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ---------------------------------------------------------
+   Mobile / Smaller Screens
+   --------------------------------------------------------- */
+
+@media (max-width: 500px) {
+
+    #chat-widget {
+
+        width: calc(100vw - 20px);
+
+        height: calc(100vh - 40px);
+
+        right: 10px;
+
+        bottom: 20px;
+
+    }
+
+
+    #open-chat {
+
+        right: 15px;
+
+        bottom: 15px;
+
+    }
+
+}

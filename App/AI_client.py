@@ -16,7 +16,7 @@ not require changes to the rest of the platform.
 
 """
 
-from config import (
+from App.config import (
     AI_PROVIDER,
     GEMINI_MODEL,
     OLLAMA_MODEL

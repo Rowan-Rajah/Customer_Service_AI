@@ -1,6 +1,6 @@
-"Product " Price Stock
-mouse 200 10
-keyboard 300 20
-webcam 400 30
-stand 500 40
-USB 600 50
+Product;Price;Stock
+Hair Gel;120;15
+Moisturising Shampoo;180;12
+Hair Conditioner;170;10
+Hait Styling Cream;150;8
+Hair Oil;140;20

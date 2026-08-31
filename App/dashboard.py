@@ -14,32 +14,47 @@ Customers never interact with this interface.
 
 import streamlit as st
 
-from analytics import (
+
+import os
+import sys
+
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
+
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+
+
+from App.analytics import (
     get_dashboard_statistics,
     get_database_statistics
 )
 
-from config import APPLICATION_NAME
+from App.config import APPLICATION_NAME
 
 import matplotlib.pyplot as plt
 
 
-from export_manager import (
+from App.export_manager import (
     export_csv,
     export_excel
 )
 
-from config import EXCEL_EXPORT
+from App.config import EXCEL_EXPORT
 
 
-from knowledge_manager import (
+from App.knowledge_manager import (
     get_knowledge_files,
     save_uploaded_file,
     load_knowledge,
     delete_knowledge_file
 )
 
-from website_manager import (
+from App.website_manager import (
     download_webpage,
     extract_visible_text,
     clean_text,

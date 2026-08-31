@@ -42,24 +42,37 @@ from telegram.ext import (
     filters
 )
 
-from AI_client import get_ai_response
 
-from sentiment import analyse_sentiment
+import sys
 
-from classifier import predict_category
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
 
-from logger import log_message
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
-from knowledge_manager import (
+
+from App.AI_client import get_ai_response
+
+from App.sentiment import analyse_sentiment
+
+from App.classifier import predict_category
+
+from App.logger import log_message
+
+from App.knowledge_manager import (
     load_knowledge,
     search_knowledge
 )
 
-from database_manager import search_database
+from App.database_manager import search_database
 
-from escalation import requires_human_review
+from App.escalation import requires_human_review
 
-from config import (
+from App.config import (
     SYSTEM_PROMPT,
     MODEL_NAME
 )

@@ -19,7 +19,7 @@ import os
 import pandas as pd
 import psycopg2
 
-from knowledge_manager import (
+from App.knowledge_manager import (
     get_knowledge_files,
     SUPPORTED_FILE_TYPES
 )
