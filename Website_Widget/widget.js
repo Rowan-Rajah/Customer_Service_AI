@@ -11,7 +11,7 @@
 
 // Local FastAPI server
 
-const API_URL = "http://127.0.0.1:8000/chat";
+const API_URL = "https://customer-service-ai-fastapi.onrender.com/chat";
 
 
 /* ---------------------------------------------------------
