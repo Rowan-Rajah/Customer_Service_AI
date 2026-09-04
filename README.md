@@ -2393,13 +2393,17 @@ The platform currently supports multiple interfaces around the same underlying A
 The main design principle is that each communication channel should reuse the same underlying AI, business knowledge, database, logging, analytics, and escalation systems instead of implementing separate systems for each platform.
 
 
-Customer Service AI Platform — Latest Project Update
+````markdown
+# Customer Service AI Platform — Latest Project Update
 
 ---
-Website Chat Widget
+
+## Website Chat Widget
 
 A website-embeddable chat widget has been added to the platform.
+
 The widget provides a customer-facing chat interface that can be placed directly on a business website.
+
 The widget consists of:
 
 ```text
@@ -2421,134 +2425,409 @@ Existing Customer Service AI Platform
    ├── Message Classification
    ├── Human Review / Escalation
    └── Conversation Logging
-```
+````
 
-The website widget does not implement a separate AI system.
-Instead, it communicates with the existing platform through the FastAPI API, allowing the website interface to reuse the existing AI, business knowledge, database, logging, sentiment analysis, classification, and human-review functionality.
+The website widget does not implement a separate AI system. Instead, it communicates with the existing platform through the FastAPI API, allowing the website interface to reuse the existing AI, business knowledge, database, logging, sentiment analysis, classification, and human-review functionality.
+
 The widget currently includes:
-Chat launcher button
-Chat window
-Customer and AI message bubbles
-Message input
-Send button
-Enter-to-send functionality
-Conversation session ID
-Connection to the FastAPI `/chat` endpoint
-Error handling when the API cannot be reached
-Automatic scrolling to the newest message
-Responsive chat interface
-The widget has been successfully tested locally.
+
+* Chat launcher button
+* Chat window
+* Customer and AI message bubbles
+* Message input
+* Send button
+* Enter-to-send functionality
+* Conversation session ID
+* Connection to the FastAPI `/chat` endpoint
+* Error handling when the API cannot be reached
+* Automatic scrolling to the newest message
+* Responsive chat interface
+
+The widget has been successfully tested locally and deployed as part of the salon website demonstration.
 
 ---
-Website Knowledge Integration
+
+## Website Knowledge Integration
 
 The existing website knowledge functionality has also been tested with the website widget.
+
 The system was successfully able to retrieve and provide business information from website knowledge, including:
-Business location
-Opening hours
-Contact information
-Services
-Pricing information
+
+* Business location
+* Opening hours
+* Contact information
+* Services
+* Pricing information
+
 The testing demonstrated that the AI can use website-derived knowledge to answer customer questions.
+
 The website knowledge extraction process was also updated to ensure that text encoding is handled correctly, preventing incorrectly displayed characters such as malformed accented characters.
+
 For example, business names containing accented characters can now be displayed correctly in the customer-facing widget.
 
 ---
-Website Widget Testing
+
+## Website Widget Testing
 
 The website widget was tested using a range of customer questions.
+
 Testing confirmed that the system can successfully:
-Answer general business questions
-Retrieve information from the business knowledge base
-Retrieve product information from PostgreSQL
-Maintain conversation context
-Handle follow-up questions
-Detect requests for human assistance
-Trigger human-review responses
-Handle questions where the required information is unavailable
-Provide appropriate responses when information is not known
+
+* Answer general business questions
+* Retrieve information from the business knowledge base
+* Retrieve product information from PostgreSQL
+* Maintain conversation context
+* Handle follow-up questions
+* Detect requests for human assistance
+* Trigger human-review responses
+* Handle questions where the required information is unavailable
+* Provide appropriate responses when information is not known
+
 The widget was also tested using a business knowledge base containing information from a hair salon.
+
 The AI was able to accurately retrieve business details such as the salon's location, opening hours, phone number, services, and pricing.
+
 Testing also demonstrated that the system can retrieve product information from the PostgreSQL database when appropriate.
+
 The testing showed that the quality of the AI's answers depends on the quality and organisation of the business knowledge provided to it. Keeping knowledge bases focused on the correct business and avoiding unrelated information improves the reliability of responses.
+
 ---
 
-FastAPI Integration
+## FastAPI Integration
 
 A FastAPI application has been added as the backend interface for the website widget.
+
 The API provides the following endpoint:
+
 ```text
 POST /chat
 ```
+
 The endpoint accepts:
+
 ```text
 message
 session_id
 ```
 
 and returns the AI response together with the session ID.
+
 The API has been successfully tested locally using Uvicorn.
+
 The project can successfully import the FastAPI application using:
+
 ```text
 python -c "from App.api import app; print('API import successful')"
 ```
+
 The API has also been successfully started using:
+
 ```text
 python -m uvicorn App.api:app --host 0.0.0.0 --port 8000
 ```
+
 A local API request was successfully tested and returned an AI response using the existing business knowledge.
+
 The FastAPI integration therefore reuses the existing project architecture rather than replacing or restructuring the existing applications.
+
 ---
-Deployment Compatibility Testing
+
+## Deployment Compatibility Testing
+
 The addition of the FastAPI API and website widget has been tested against the existing applications to ensure that the existing architecture has not been broken.
+
 The Streamlit customer application was tested successfully.
+
 The Streamlit business dashboard was also tested successfully.
+
 The existing Telegram bot was tested locally as well. The bot successfully started and reached the Telegram polling stage.
+
 A `Conflict: terminated by other getUpdates request` message was encountered during testing because another instance of the same Telegram bot is already running on Railway.
+
 This is expected behaviour when two Telegram bot instances attempt to use the same polling connection simultaneously and does not indicate that the Telegram bot's application code is broken.
+
 The existing Render PostgreSQL database continues to be used as the shared cloud database for the platform.
+
 ---
-Final Architecture
-The current platform architecture is now:
+
+## Cloud Deployment
+
+The FastAPI backend has been deployed to Render.
+
+The deployed FastAPI service provides the public backend used by the website widget and WhatsApp integration.
+
+The deployed API is available at:
+
+```text
+https://customer-service-ai-fastapi.onrender.com
+```
+
+The website widget was updated to communicate with the deployed FastAPI service instead of the local development server.
+
+The deployed architecture therefore allows customers to communicate with the AI platform without the developer's local computer needing to be running.
+
+---
+
+## WhatsApp Integration
+
+WhatsApp Cloud API integration has been added to the Customer Service AI Platform.
+
+The WhatsApp integration uses the existing FastAPI backend rather than implementing a separate chatbot.
+
+The communication flow is:
+
+```text
+Customer WhatsApp
+       │
+       ▼
+Meta WhatsApp Cloud API
+       │
+       ▼
+FastAPI /webhook
+       │
+       ▼
+Existing Customer Service AI Platform
+       │
+       ├── Google Gemini
+       ├── Business Knowledge Base
+       ├── PostgreSQL Database
+       ├── Sentiment Analysis
+       ├── Message Classification
+       ├── Human Review / Escalation
+       └── Conversation Logging
+       │
+       ▼
+FastAPI
+       │
+       ▼
+Meta WhatsApp Cloud API
+       │
+       ▼
+Customer WhatsApp
+```
+
+The WhatsApp integration was designed to reuse the same AI processing pipeline used by the other communication channels.
+
+Incoming WhatsApp messages are received through the FastAPI `/webhook` endpoint.
+
+The system then processes the message using the existing AI platform and sends the generated response back to the customer's WhatsApp number.
+
+---
+
+## WhatsApp Webhook
+
+The FastAPI application now provides the WhatsApp webhook endpoints required by Meta.
+
+The webhook includes:
+
+```text
+GET /webhook
+POST /webhook
+```
+
+The `GET /webhook` endpoint handles Meta webhook verification.
+
+The `POST /webhook` endpoint receives incoming WhatsApp events.
+
+The webhook implementation includes:
+
+* Meta webhook verification
+* Verify-token validation
+* WhatsApp phone number ID validation
+* Webhook signature verification
+* Incoming message parsing
+* Text message handling
+* Duplicate message protection
+* Background message processing
+* AI response generation
+* WhatsApp response delivery
+
+The WhatsApp integration uses environment variables for sensitive configuration values such as:
+
+```text
+WHATSAPP_ACCESS_TOKEN
+WHATSAPP_PHONE_NUMBER_ID
+WHATSAPP_VERIFY_TOKEN
+WHATSAPP_APP_SECRET
+WHATSAPP_API_VERSION
+```
+
+Sensitive credentials are not stored in the GitHub repository.
+
+---
+
+## WhatsApp AI Integration
+
+WhatsApp messages use the same AI pipeline as the existing platform.
+
+The processing flow is:
+
+```text
+Incoming WhatsApp Message
+          │
+          ▼
+FastAPI Webhook
+          │
+          ▼
+Conversation Session
+          │
+          ▼
+Business Knowledge + Database
+          │
+          ▼
+Google Gemini
+          │
+          ▼
+AI Response
+          │
+          ├── Conversation Logging
+          ├── Sentiment Analysis
+          └── Classification / Human Review
+          │
+          ▼
+WhatsApp Cloud API
+          │
+          ▼
+Customer
+```
+
+WhatsApp conversations are assigned a session ID based on the customer's WhatsApp number, allowing conversation context to be maintained across messages.
+
+WhatsApp messages and AI responses are also logged to the shared PostgreSQL database.
+
+---
+
+## Meta WhatsApp Configuration
+
+A Meta Developer application was configured for the Customer Service AI Platform.
+
+The WhatsApp test environment was configured with:
+
+```text
+WhatsApp Business Account
+        │
+        ▼
+Customer Service AI Platform
+        │
+        ▼
+Meta WhatsApp Test Number
+```
+
+The Meta webhook was successfully configured using the deployed FastAPI endpoint:
+
+```text
+https://customer-service-ai-fastapi.onrender.com/webhook
+```
+
+Webhook verification was successfully completed.
+
+The WhatsApp Business Account was then subscribed to the Customer Service AI Platform application using the Meta Graph API.
+
+The subscription request returned:
+
+```json
+{
+  "success": true
+}
+```
+
+This was the missing configuration required for Meta to forward actual incoming WhatsApp messages to the FastAPI webhook.
+
+---
+
+## WhatsApp Testing
+
+The WhatsApp integration was successfully tested end-to-end.
+
+A message was sent from a normal WhatsApp account to the Meta test number.
+
+The message was successfully received by the FastAPI webhook.
+
+The Render logs confirmed:
+
+```text
+POST /webhook 200 OK
+```
+
+The message was then processed by the existing AI system and a response was successfully sent back through WhatsApp.
+
+The successful communication path was therefore confirmed as:
+
+```text
+WhatsApp
+   ↓
+Meta
+   ↓
+FastAPI /webhook
+   ↓
+Customer Service AI Platform
+   ↓
+Google Gemini
+   ↓
+FastAPI
+   ↓
+Meta WhatsApp API
+   ↓
+WhatsApp
+```
+
+This confirms that the WhatsApp integration is functioning as a real communication interface to the existing Customer Service AI Platform rather than as a separate chatbot.
+
+---
+
+## Multi-Channel Architecture
+
+The platform now supports multiple customer communication interfaces around the same underlying AI and business systems.
+
 ```text
                          Customer Service AI Platform
                                     │
-             ┌──────────────────────┼─────────────────────────┐
-             │                      │                         │
-             ▼                      ▼                         ▼
-       Streamlit App          Website Widget             Telegram
-             │                      │                         │
-             │                      ▼                         │
-             │                FastAPI API                    │
-             │                      │                         │
-             └──────────────────────┼─────────────────────────┘
-                                    ▼
-                           Shared AI Platform
-                                    │
-                ┌───────────────────┼───────────────────┐
-                │                   │                   │
-                ▼                   ▼                   ▼
-             Gemini          Knowledge Base        PostgreSQL
-                                                        │
-                                      ┌─────────────────┼─────────────────┐
-                                      ▼                 ▼                 ▼
-                                  Products            Logs            Analytics
-                                                        │
-                                                        ▼
-                                               Human Review
+             ┌──────────────────────┼──────────────────────────┐
+             │                      │                          │
+             ▼                      ▼                          ▼
+       Streamlit App          Website Widget               Telegram
+                                    │                          │
+                                    ▼                          │
+                              FastAPI API                      │
+                                    │                          │
+                                    ▼                          │
+                                WhatsApp                       │
+                                    │                          │
+                                    └──────────┬───────────────┘
+                                               ▼
+                                      Shared AI Platform
+                                               │
+                ┌──────────────────────────────┼──────────────────────────────┐
+                │                              │                              │
+                ▼                              ▼                              ▼
+             Gemini                    Knowledge Base                    PostgreSQL
+                                                                                │
+                                                          ┌─────────────────────┼─────────────────────┐
+                                                          ▼                     ▼                     ▼
+                                                      Products                Logs                Analytics
+                                                                                │
+                                                                                ▼
+                                                                         Human Review
 ```
+
 The important architectural principle remains unchanged:
-Different customer communication channels reuse the same underlying AI and business systems.
-The website widget therefore acts as another interface to the existing Customer Service AI Platform rather than becoming a separate chatbot system.
+
+> **Different customer communication channels reuse the same underlying AI and business systems.**
+
+The website widget, Telegram bot, and WhatsApp integration therefore act as different interfaces to the existing Customer Service AI Platform rather than becoming separate chatbot systems.
+
 ---
-Current Project Status
+
+# Current Project Status
+
 The latest project status is:
+
 ```text
 Component                         Status
 ------------------------------------------------
-GitHub repository                 ✓ Existing
-Streamlit Customer Application    ✓ Working
-Streamlit Business Dashboard      ✓ Working
+GitHub repository                 ✓ Deployed
+Streamlit Customer Application    ✓ Deployed
+Streamlit Business Dashboard      ✓ Deployed
 Render cloud services             ✓ Deployed
 Render PostgreSQL database        ✓ Working
 Cloud database integration        ✓ Complete
@@ -2556,22 +2835,96 @@ DBeaver database access           ✓ Working
 Telegram bot                      ✓ Deployed on Railway
 Telegram PostgreSQL logging       ✓ Working
 Website knowledge manager         ✓ Working
-Website Chat Widget               ✓ Working locally
-FastAPI API                       ✓ Working locally
+Website Chat Widget               ✓ Deployed
+FastAPI API                       ✓ Deployed
 Widget testing                    ✓ Complete
 Encoding cleanup                  ✓ Complete
-Deployment preparation            ✓ In progress
-Website widget cloud deployment   → Next
+WhatsApp integration              ✓ Working
+WhatsApp webhook                  ✓ Working
+Meta WABA subscription            ✓ Complete
+WhatsApp end-to-end testing       ✓ Complete
 ```
-The remaining deployment work is primarily infrastructure configuration rather than redevelopment of the core AI platform.
-The website widget must use the deployed FastAPI service URL rather than the local development address:
-```javascript
-const API_URL = "http://127.0.0.1:8000/chat";
+
+The platform is now operating as a **multi-channel, cloud-deployed customer service AI platform**.
+
+The current communication interfaces are:
+
+```text
+✓ Streamlit Customer Application
+✓ Website Chat Widget
+✓ Telegram Bot
+✓ WhatsApp
 ```
-During deployment, this will be replaced with the public HTTPS URL of the deployed FastAPI service.
-The final deployment will therefore consist of the existing cloud platform together with the new website communication interface.
+
+All of these interfaces reuse the same underlying AI platform, business knowledge, PostgreSQL database, conversation logging, sentiment analysis, classification, and human-review functionality.
+
 ---
 
+## Current Deployment Architecture
 
+The current deployed architecture is:
 
+```text
+                         Customer Service AI Platform
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          │                         │                         │
+          ▼                         ▼                         ▼
+    Streamlit App            Website Widget              Telegram
+                                    │                         │
+                                    ▼                         │
+                              FastAPI API                     │
+                                    │                         │
+                                    ▼                         │
+                                WhatsApp                      │
+                                    │                         │
+                                    └──────────┬──────────────┘
+                                               ▼
+                                      Shared AI Platform
+                                               │
+                         ┌─────────────────────┼─────────────────────┐
+                         │                     │                     │
+                         ▼                     ▼                     ▼
+                      Gemini             Knowledge Base         PostgreSQL
+                                                                     │
+                                                   ┌─────────────────┼─────────────────┐
+                                                   ▼                 ▼                 ▼
+                                               Products            Logs            Analytics
+                                                                     │
+                                                                     ▼
+                                                              Human Review
+```
 
+The platform is therefore no longer only a local prototype.
+
+It is a **cloud-deployed, multi-channel customer service AI platform** with a shared AI backend and business data infrastructure.
+
+---
+
+## Future Development
+
+Potential future extensions include:
+
+```text
+Current
+   │
+   ├── Streamlit Customer Application     ✓
+   ├── Business Dashboard                 ✓
+   ├── Website Chat Widget                ✓
+   ├── Telegram Integration               ✓
+   └── WhatsApp Integration               ✓
+   │
+   ▼
+Future
+   │
+   ├── Voice / Telephone Integration
+   ├── Additional Messaging Platforms
+   ├── Advanced Analytics
+   ├── Appointment / Booking Integration
+   └── Additional Business-Specific Integrations
+```
+
+The underlying architecture has been designed so that future communication channels can reuse the existing AI, knowledge, database, logging, analytics, sentiment, classification, and escalation systems.
+
+```
+```
