@@ -14,6 +14,11 @@ Customers never interact with this interface.
 
 import streamlit as st
 
+AUTHORIZED_EMAILS = [
+    "rowanrajah25@gmail.com",
+    "rosegblack43@gmail.com"
+]
+
 
 import os
 import sys
@@ -74,13 +79,23 @@ st.set_page_config(
 
 
 # ---------------------------------------------------------
-# Authentication
+# Authentication and Authorization
 # ---------------------------------------------------------
 
 if not st.user.is_logged_in:
     st.button(
         "Log in with Google",
         on_click=st.login
+    )
+    st.stop()
+
+if st.user.email not in AUTHORIZED_EMAILS:
+    st.error(
+        "You are not authorized to access this dashboard."
+    )
+    st.button(
+        "Log out",
+        on_click=st.logout
     )
     st.stop()
 
@@ -447,6 +462,7 @@ with open(
         file_name="conversation_log.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 
