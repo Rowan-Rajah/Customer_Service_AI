@@ -72,6 +72,24 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# ---------------------------------------------------------
+# Authentication
+# ---------------------------------------------------------
+
+if not st.user.is_logged_in:
+    st.button(
+        "Log in with Google",
+        on_click=st.login
+    )
+    st.stop()
+
+st.button(
+    "Log out",
+    on_click=st.logout
+)
+
+
 # ---------------------------------------------------------
 # Page Title
 # ---------------------------------------------------------
@@ -429,6 +447,7 @@ with open(
         file_name="conversation_log.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
 
 
 

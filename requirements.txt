@@ -6,6 +6,7 @@ annotated-doc==0.0.5
 annotated-types==0.7.0
 anyio==4.14.2
 attrs==26.1.0
+Authlib==1.8.0
 beautifulsoup4==4.15.0
 blinker==1.9.0
 cachetools==7.1.4
@@ -37,6 +38,7 @@ idna==3.18
 itsdangerous==2.2.0
 Jinja2==3.1.6
 joblib==1.5.3
+joserfc==1.7.5
 jsonpatch==1.33
 jsonpointer==3.1.1
 jsonschema==4.26.0
