@@ -14,13 +14,15 @@ Customers never interact with this interface.
 
 import streamlit as st
 
+import os
+
 AUTHORIZED_EMAILS = [
-    "rowanrajah25@gmail.com",
-    "rosegblack43@gmail.com"
+    email.strip()
+    for email in os.getenv("AUTHORIZED_EMAILS", "").split(",")
+    if email.strip()
 ]
 
 
-import os
 import sys
 
 PROJECT_ROOT = os.path.dirname(
