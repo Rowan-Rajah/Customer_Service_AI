@@ -16,6 +16,8 @@ import streamlit as st
 
 import os
 
+import pandas as pd
+
 AUTHORIZED_EMAILS = [
     email.strip()
     for email in os.getenv("AUTHORIZED_EMAILS", "").split(",")
@@ -38,8 +40,10 @@ if PROJECT_ROOT not in sys.path:
 
 from App.analytics import (
     get_dashboard_statistics,
-    get_database_statistics
+    get_database_statistics,
+    get_voice_call_statistics
 )
+
 
 from App.config import APPLICATION_NAME
 
@@ -130,6 +134,9 @@ st.markdown("---")
 dashboard = get_dashboard_statistics()
 
 database = get_database_statistics()
+
+voice = get_voice_call_statistics()
+
 
 # ---------------------------------------------------------
 # KPI Section
@@ -253,6 +260,130 @@ with column4:
         "Out of Stock",
         database["out_of_stock"]
     )
+
+st.markdown("---")
+
+
+# ---------------------------------------------------------
+# Voice Calls
+# ---------------------------------------------------------
+
+st.header("📞 Voice Calls")
+
+column1, column2, column3 = st.columns(3)
+
+with column1:
+    st.metric(
+        "Total Calls",
+        voice["total_calls"]
+    )
+
+with column2:
+    st.metric(
+        "Successful Calls",
+        voice["successful_calls"]
+    )
+
+with column3:
+    average_duration_seconds = (
+        voice["average_duration"] / 1000
+    )
+
+    st.metric(
+        "Average Duration",
+        f"{average_duration_seconds:.1f} seconds"
+    )
+
+
+if voice["total_calls"] > 0:
+
+    st.subheader("Recent Voice Calls")
+
+    calls = voice["calls"].copy()
+
+    display_columns = [
+        "start_timestamp",
+        "agent_name",
+        "call_type",
+        "duration_ms",
+        "sentiment",
+        "call_successful",
+        "requested_service",
+        "disconnection_reason"
+    ]
+
+    st.dataframe(
+        calls[display_columns],
+        use_container_width=True
+    )
+
+
+    st.subheader("Call Details")
+
+    for _, call in calls.iterrows():
+
+        call_time = call["start_timestamp"]
+
+        if pd.notna(call_time):
+            call_time = str(call_time)
+        else:
+            call_time = "Unknown time"
+
+        with st.expander(
+            f"📞 {call_time} — "
+            f"{call['agent_name'] or 'Unknown agent'}"
+        ):
+
+            st.write(
+                f"**Call ID:** {call['call_id']}"
+            )
+
+            st.write(
+                f"**Sentiment:** {call['sentiment'] or 'Unknown'}"
+            )
+
+            st.write(
+                f"**Successful:** "
+                f"{call['call_successful']}"
+            )
+
+            st.write(
+                f"**Requested Service:** "
+                f"{call['requested_service'] or 'Not specified'}"
+            )
+
+            st.write(
+                f"**Disconnection Reason:** "
+                f"{call['disconnection_reason'] or 'Unknown'}"
+            )
+
+            st.write("**Call Summary:**")
+
+            st.write(
+                call["call_summary"]
+                or "No summary available."
+            )
+
+            st.write("**Transcript:**")
+
+            st.write(
+                call["transcript"]
+                or "No transcript available."
+            )
+
+            if call["recording_url"]:
+
+                st.markdown(
+                    f"[🎧 Listen to Recording]"
+                    f"({call['recording_url']})"
+                )
+
+else:
+
+    st.info(
+        "No voice calls have been recorded yet."
+    )
+
 
 st.markdown("---")
 

@@ -382,6 +382,176 @@ def get_database_statistics():
     }
 
 
+# ---------------------------------------------------------
+# Voice Call Statistics
+# ---------------------------------------------------------
+
+def get_voice_call_statistics():
+
+    connection = psycopg2.connect(
+        DATABASE_URL
+    )
+
+    cursor = connection.cursor()
+
+
+    # -----------------------------------------------------
+    # Get all voice call records
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            voice_call_id,
+            call_id,
+            agent_name,
+            call_type,
+            customer_phone,
+            business_phone,
+            start_timestamp,
+            end_timestamp,
+            duration_ms,
+            transcript,
+            recording_url,
+            disconnection_reason,
+            call_summary,
+            sentiment,
+            call_successful,
+            in_voicemail,
+            requested_service,
+            created_at
+        FROM voice_calls
+        ORDER BY start_timestamp DESC
+    """)
+
+    rows = cursor.fetchall()
+
+
+    # Get column names from the database
+
+    columns = [
+        "voice_call_id",
+        "call_id",
+        "agent_name",
+        "call_type",
+        "customer_phone",
+        "business_phone",
+        "start_timestamp",
+        "end_timestamp",
+        "duration_ms",
+        "transcript",
+        "recording_url",
+        "disconnection_reason",
+        "call_summary",
+        "sentiment",
+        "call_successful",
+        "in_voicemail",
+        "requested_service",
+        "created_at"
+    ]
+
+
+    # Convert PostgreSQL results into a Pandas DataFrame.
+
+    df = pd.DataFrame(
+        rows,
+        columns=columns
+    )
+
+
+    cursor.close()
+    connection.close()
+
+
+    # -----------------------------------------------------
+    # Handle empty database
+    # -----------------------------------------------------
+
+    if df.empty:
+
+        return {
+            "total_calls": 0,
+            "successful_calls": 0,
+            "average_duration": 0,
+            "sentiment_counts": {},
+            "service_counts": {},
+            "calls": df
+        }
+
+
+    # -----------------------------------------------------
+    # Calculate call statistics
+    # -----------------------------------------------------
+
+    successful_calls = int(
+        df["call_successful"]
+        .fillna(False)
+        .sum()
+    )
+
+
+    average_duration = (
+        df["duration_ms"]
+        .dropna()
+        .mean()
+    )
+
+
+    if pd.isna(average_duration):
+        average_duration = 0
+
+
+    # -----------------------------------------------------
+    # Sentiment counts
+    # -----------------------------------------------------
+
+    sentiment_counts = (
+        df["sentiment"]
+        .dropna()
+        .value_counts()
+        .to_dict()
+    )
+
+
+    # -----------------------------------------------------
+    # Requested service counts
+    # -----------------------------------------------------
+
+    service_counts = (
+        df["requested_service"]
+        .dropna()
+        .value_counts()
+        .to_dict()
+    )
+
+
+    # -----------------------------------------------------
+    # Return Voice Call Data
+    # -----------------------------------------------------
+
+    return {
+
+        "total_calls":
+            len(df),
+
+        "successful_calls":
+            successful_calls,
+
+        "average_duration":
+            average_duration,
+
+        "sentiment_counts":
+            sentiment_counts,
+
+        "service_counts":
+            service_counts,
+
+        "calls":
+            df
+    }
+
+
+
+
 
 
 
