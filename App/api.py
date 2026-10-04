@@ -39,6 +39,8 @@ import hashlib
 import urllib.request
 import urllib.error
 
+import psycopg2
+
 from fastapi import (
     FastAPI,
     BackgroundTasks,
@@ -183,6 +185,186 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     reply: str
     session_id: str
+
+
+# =========================================================
+# Retell Voice Call Database Processing
+# =========================================================
+
+def process_retell_event(
+    event_data
+):
+    """
+    Creates or updates a voice call record in PostgreSQL
+    using information received from Retell.
+    """
+
+    event_type = event_data.get(
+        "event"
+    )
+
+    call = event_data.get(
+        "call",
+        {}
+    )
+
+    call_id = call.get(
+        "call_id"
+    )
+
+    if not event_type or not call_id:
+
+        print(
+            "Ignoring Retell event without event type "
+            "or call ID."
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # Convert Retell timestamps from milliseconds
+    # -----------------------------------------------------
+
+    start_timestamp = call.get(
+        "start_timestamp"
+    )
+
+    end_timestamp = call.get(
+        "end_timestamp"
+    )
+
+    if start_timestamp:
+        from datetime import datetime
+
+        start_timestamp = datetime.fromtimestamp(
+            start_timestamp / 1000
+        )
+
+    if end_timestamp:
+        from datetime import datetime
+
+        end_timestamp = datetime.fromtimestamp(
+            end_timestamp / 1000
+        )
+
+    # -----------------------------------------------------
+    # Get call analysis information
+    # -----------------------------------------------------
+
+    call_analysis = call.get(
+        "call_analysis",
+        {}
+    )
+
+    custom_analysis_data = call_analysis.get(
+        "custom_analysis_data",
+        {}
+    )
+
+    requested_service = custom_analysis_data.get(
+        "requested_service"
+    )
+
+    # -----------------------------------------------------
+    # Get database connection
+    # -----------------------------------------------------
+
+    database_url = os.getenv(
+        "DATABASE_URL"
+    )
+
+    if not database_url:
+
+        raise RuntimeError(
+            "DATABASE_URL environment variable is not set."
+        )
+
+    connection = psycopg2.connect(
+        database_url
+    )
+
+    cursor = connection.cursor()
+
+    # =====================================================
+    # Insert or update voice call
+    # =====================================================
+
+    cursor.execute(
+        """
+        INSERT INTO voice_calls (
+            call_id,
+            agent_id,
+            agent_name,
+            call_type,
+            customer_phone,
+            business_phone,
+            start_timestamp,
+            end_timestamp,
+            duration_ms,
+            transcript,
+            recording_url,
+            disconnection_reason,
+            call_summary,
+            sentiment,
+            call_successful,
+            in_voicemail,
+            requested_service
+        )
+        VALUES (
+            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, %s, %s
+        )
+        ON CONFLICT (call_id)
+        DO UPDATE SET
+            agent_id = EXCLUDED.agent_id,
+            agent_name = EXCLUDED.agent_name,
+            call_type = EXCLUDED.call_type,
+            customer_phone = EXCLUDED.customer_phone,
+            business_phone = EXCLUDED.business_phone,
+            start_timestamp = EXCLUDED.start_timestamp,
+            end_timestamp = EXCLUDED.end_timestamp,
+            duration_ms = EXCLUDED.duration_ms,
+            transcript = EXCLUDED.transcript,
+            recording_url = EXCLUDED.recording_url,
+            disconnection_reason = EXCLUDED.disconnection_reason,
+            call_summary = EXCLUDED.call_summary,
+            sentiment = EXCLUDED.sentiment,
+            call_successful = EXCLUDED.call_successful,
+            in_voicemail = EXCLUDED.in_voicemail,
+            requested_service = EXCLUDED.requested_service
+        """,
+        (
+            call_id,
+            call.get("agent_id"),
+            call.get("agent_name"),
+            call.get("call_type"),
+            call.get("customer_phone"),
+            call.get("business_phone"),
+            start_timestamp,
+            end_timestamp,
+            call.get("duration_ms"),
+            call.get("transcript"),
+            call.get("recording_url"),
+            call.get("disconnection_reason"),
+            call_analysis.get("call_summary"),
+            call_analysis.get("user_sentiment"),
+            call_analysis.get("call_successful"),
+            call_analysis.get("in_voicemail"),
+            requested_service
+        )
+    )
+
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    print(
+        "Retell event processed successfully: "
+        + event_type
+        + " - "
+        + call_id
+    )
 
 
 # =========================================================
@@ -1199,3 +1381,80 @@ async def whatsapp_webhook(
     return {
         "status": "received"
     }
+
+
+# =========================================================
+# Retell Voice Webhook
+# =========================================================
+
+@app.post("/webhooks/retell")
+async def retell_webhook(
+    request: Request
+):
+    """
+    Receives voice call events from Retell.
+
+    Retell can send multiple events for the same call,
+    including:
+
+    - call_started
+    - call_ended
+    - call_analyzed
+
+    All events are stored in the same voice_calls record
+    using the Retell call_id.
+    """
+
+    # -----------------------------------------------------
+    # Read webhook body
+    # -----------------------------------------------------
+
+    body = await request.body()
+
+    # -----------------------------------------------------
+    # Convert JSON body into Python data
+    # -----------------------------------------------------
+
+    try:
+
+        event_data = json.loads(
+            body.decode("utf-8")
+        )
+
+    except (UnicodeDecodeError, json.JSONDecodeError):
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid Retell webhook JSON."
+        )
+
+    # -----------------------------------------------------
+    # Process Retell event
+    # -----------------------------------------------------
+
+    try:
+
+        process_retell_event(
+            event_data
+        )
+
+    except Exception as error:
+
+        print(
+            "Retell webhook processing error: "
+            + str(error)
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to process Retell webhook."
+        )
+
+    # -----------------------------------------------------
+    # Acknowledge Retell webhook
+    # -----------------------------------------------------
+
+    return {
+        "status": "received"
+    }
+

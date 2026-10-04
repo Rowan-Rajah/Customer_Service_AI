@@ -56,6 +56,33 @@ cursor.execute("""
     )
 """)
 
+# ---------------------------------------------------------
+# voice calls table
+# ---------------------------------------------------------
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS voice_calls (
+        voice_call_id SERIAL PRIMARY KEY,
+        call_id TEXT NOT NULL UNIQUE,
+        agent_id TEXT,
+        agent_name TEXT,
+        call_type TEXT,
+        customer_phone TEXT,
+        business_phone TEXT,
+        start_timestamp TIMESTAMP,
+        end_timestamp TIMESTAMP,
+        duration_ms INTEGER,
+        transcript TEXT,
+        recording_url TEXT,
+        disconnection_reason TEXT,
+        call_summary TEXT,
+        sentiment TEXT,
+        call_successful BOOLEAN,
+        in_voicemail BOOLEAN,
+        requested_service TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
 
 # ---------------------------------------------------------
 # Save changes
@@ -71,4 +98,5 @@ cursor.close()
 connection.close()
 
 print("PostgreSQL tables created successfully!")
+
 
